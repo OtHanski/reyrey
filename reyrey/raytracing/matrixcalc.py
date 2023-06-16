@@ -1,5 +1,6 @@
 import numpy as np
 from math import pi
+import raytracing.matrices as ma
 
 def parseOSYS():
     return 1
@@ -8,6 +9,10 @@ def buildMatrixList(test = False):
     """Build list of matrices from input list"""
     MatrixList = []
     
+    if test:
+        for M in ma.testSystem:
+            MatrixList.append(M["ABCD"])
+        return MatrixList
 
     return MatrixList
     
@@ -26,7 +31,7 @@ def compositeABCD(matrixList = []):
     
     return result
 
-def calcq(Z, ZR = 0, lam = 0, W = 0, n = 1):
+def calcq(Z = 0, ZR = 0, lam = 0, W = 0, n = 1):
     """Calculate Q parameter, Z = Distance from waist, ZR = Rayleigh length, 
        lam = wavelength, W = Beam waist, n = Refractive index"""
     # If no parameters given, return NaN
@@ -44,7 +49,7 @@ def transformq(ABCD, q1):
     return q2
 
 class BeamTrace:
-    def __init__(self,matrexes,q_in,z0=0,n_points=10):
+    def __init__(self,matrexes,q_in,z0=0,n_points=1000):
         self.n_points = n_points
         self.z0 = z0 #distance from q_in point to 0, needed only for convinience
         self.matrexes = matrexes # array of matrixes or labels - strings (names) at wich to calculate q-parameter
@@ -69,7 +74,7 @@ class BeamTrace:
                     continue
                     
             if M[0][1] != 0: # it is free space matrix 
-                xs = linspace(0,M[0][1],self.n_points)
+                xs = np.linspace(0,M[0][1],self.n_points)
                 ws = w_z(xs+real(q_in),lda=lda,zr=imag(q_in)) # calculates waists
                 #print(ws)
                 

@@ -1,0 +1,5 @@
+global-include *.json
+global-include scripttest.txt
+global-include readme.txt
+global-include EEEEEE.jpg
+include requirements.txt

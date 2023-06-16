@@ -1,0 +1,141 @@
+Metadata-Version: 2.1
+Name: HbeamController-ETH
+Version: 2.1.5
+Summary: Program for controlling Hbeam setup at ETH
+Home-page: https://github.com/OtHanski/HbeamController
+Author: Otto Hanski
+Author-email: otolha@utu.fi
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+######################################################
+###   README FOR THE RTM3004 CONTROLLER SOFTWARE   ###
+######################################################
+
+First of all, apologies to whichever unfortunate soul inherits this project.
+
+This software was written to be used with the H-beam experiment of ETH Zurich,
+using the RTM3004 oscilloscope for data gathering and the Trueform 33600A waveform
+generator for controlling laser delay.
+
+All communication with the devices was written via pyvisa using USB connections,
+using the SCPI protocols for these devices. The purpose of the program was to 
+automate the measurements done during the calibration of the Hbeam, while offering 
+a platform that allows for easy expansion of the software for additional functionality.
+
+
+A: INSTALLATION
+
+1) Get the program version you want to use from the Github page:
+https://github.com/OtHanski/HbeamController
+
+2) Extract (or pip install) the tar.gz to whatever directory you wish to install to
+
+3) Install libusb for communication if not present on the machine
+
+4) Install device drivers using Keysight IO Libraries Suite if not present on the machine
+https://www.keysight.com/gb/en/lib/software-detail/computer-software/io-libraries-suite-downloads-2175637.html
+
+5) Install other package dependencies as required. You may check "requirements.txt" for
+   an overview of which packages are used by the program, installable via pip.
+
+
+B: BASIC OPERATION
+
+1) Open CMD window
+
+2) Navigate to the installation directory, then to the src/Controller directory.
+
+3) Run using python the me.py"
+
+4) Use "help" command to figure out what the hell you want to do 
+   - Note, commands not case-sensitive
+   - For-loops are only available for scripts, not directly from cmd interface
+
+
+= measure commands needs a number (of measurements)
+like
+measure 100
+
+5) Have fun :p
+
+Notes:
+- Your default settings that are run at startup are in the "./SETTINGS/DEFAULT.json" file.
+	- This file cannot be overwritten by the "settings:save" function for safety reasons,
+	  but may of course be manually edited.
+	- If a device has its status set to off in these settings, it must be manually initialized
+	  via the init commands before running your measurements.
+- Didn't have time to implement the error handling system, so with most unexpected errors the program
+  will simply crash. Sorry bout that, feel free to implement error handling if you feel like.
+- When exiting the program, please use the "quit" command to properly close device connections.
+- If you get VISA errors, first thing to do is unplug and replug the USBs, since often
+  this fixes it.
+
+
+C: SCRIPTING
+
+The software has the capability to run pre-written scripts. Using the "SCRIPT" command,
+you can either as an argument specify the path to a script file to run, or leave the 
+argument empty, which will open a file dialog to allow you to choose the file. Scripts
+are written using the same command protocol as in the main program, separated by either
+newlines ("\n") or semicolons(";").
+
+Additionally, in scrips you can use the FOR<i>{} loops. This will replicate the commands
+inside the braces i times. Additionally, any "<i>" (without the quotes) within the braces
+will be replaced with the loop number (starting from 0), allowing for limited control over parameters
+between loops. Additionally, if you have nested for loops, you may add additional "<>" 
+braces to dictate which loop iteration number is used. each set of braces beyond the first 
+will tell the program to use the iterator from one level higher up. For example, <i> will
+use the current loop, <<i>> will be used for the loop this one is nested in, and so on.
+These replacements are done as string replacements, starting from 1 and ending at i, so 
+you may get creative, for example "FOR4{WAIT <i>}" will be parsed into:
+
+WAIT 0
+WAIT 1
+WAIT 2
+WAIT 3
+
+If you need more complicated functionality, you may also specify functions of i in these
+braces. The syntax for these functions is simply common python syntax, evaluated by the
+eval() function, which will be passed the value of i. Additionally, any functions available
+in the python "math" package will work, such as sqrt(), exp() and so on. As these variables
+are handled via the eval() function, pretty diverse functionality will be available. As an
+example, "FOR4{WAIT <(2*i+1)>}" will be parsed into:
+
+WAIT 2
+WAIT 4
+WAIT 6
+WAIT 8
+
+Have fun experimenting :P
+
+D: GENERAL STRUCTURE, ADDING COMMANDS
+
+The system commands must all be defined in the "commands.json" file, located in the
+Controller/PARSER directory. All commands should have defined the function they correspond to, 
+their description and what arguments they take. Any commands defined here will also be visible
+via the HELP command.
+
+After you have defined your command in the json file, you must create the python script for 
+the function and import it to the "command_functions.py" file. Then it will be ready for use
+in the program. Please try to stick to the same function form as can be seen in most of the
+functions used in the baseline program to make structure more clear, but exceptions can be 
+defined in the "parser.py" file under EXECCOMMAND.
+
+E: SUPPORT
+
+You may of course contact the author for support (check setup.py for email), but my final 
+intended update for this program will be committed on 10/05/2021, so good luck if you're 
+reading this in like the year 2025 after some prof has tasked you with figuring this out.
+
+If you make an update though, rebuild the package (change version name first in setup.py) by
+navigating to the top-level folder containing "setup.py" and type in the console "py -m build",
+which will create a tar.gz package in the "dist" folder. Push this to the Github mentioned above,
+and add your own branch, so others will also have access to the updates, as well as old versions.
+

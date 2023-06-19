@@ -1,19 +1,19 @@
 import numpy as np
 from math import *
+from scipy.optimize import root
 import raytracing.matrices as ma
 
 def parseOSYS():
     return 1
 
-def buildMatrixList(test = False):
+
+
+def buildMatrixList(systemDicts):
     """Build list of matrices from input list"""
     MatrixList = []
     
-    if test:
-        for M in ma.testSystem:
-            MatrixList.append(M["ABCD"])
-        return MatrixList
-
+    for M in systemDicts:
+        MatrixList.append(M["ABCD"])
     return MatrixList
     
     
@@ -51,6 +51,12 @@ def transformq(ABCD, q1):
 
 ### REPLACE EVERYTHING UNDER ###
 
+def cavityq(ABCD):
+    """Returns the waist value of cavity fundamental"""
+    W = root(lambda x: abs(transformq(ABCD,1j*x)-1j*x),35e-6)
+    
+    return W.x[0]
+
 def z_r(w0,lda):
     """Calculates rayleigh range [m], w0 - waist [m], lda - wavelength [m]"""
     return (pi*w0**2/lda)
@@ -86,6 +92,7 @@ class BeamTrace:
         q_in = self.q_in
         print(f"q_in: {q_in}")
         direction = 1 # direction of the beam (if mirror comes it changes the direction)
+        self.matrexes.reverse()
         for M in self.matrexes:
             
             if type(M) == str: # it is a label to save current beam parameter
@@ -109,7 +116,7 @@ class BeamTrace:
                 self.ws.extend(ws)
                 
             elif M[0][1] == 0 and M[1][0] == 0: # ones matrix means a mirror - change of the direction
-                direction *= -1
+                direction *= 1
                 continue
             q_in = transformq(M,q_in) #calculate new q-parameter for the next matrix
 

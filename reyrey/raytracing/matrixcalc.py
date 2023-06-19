@@ -51,12 +51,16 @@ def transformq(ABCD, q1):
 
 ### REPLACE EVERYTHING UNDER ###
 
+def z_r(w0,lda):
+    """Calculates rayleigh range [m], w0 - waist [m], lda - wavelength [m]"""
+    return (pi*w0**2/lda)
+
 def w_z(z,lda,zr=None,w0=None,z0=0):
     """calculates beam radius [m] based on z_r - rayleigh range [m] or waist radios w0 [m],lda - wavelength [m]"""
     if zr == None:
         zr = z_r(w0,lda)
     try:
-        return sqrt(lda / pi * zr)*sqrt(1 + (z-z0)**2/zr**2)
+        return (lda / pi * zr)**(1/2)*(1 + (z-z0)**2/zr**2)**(1/2)
     except:
         print(f"lda:{lda}\nzr: {zr}\nz: {z}")
         print(zr)
@@ -100,8 +104,8 @@ class BeamTrace:
                     extr = self.z0
                     
                 self.xs.extend(direction*xs+extr)
-                print(f"wsl: {self.ws}")
-                print(f"ws: {ws}")
+                #print(f"wsl: {self.ws}")
+                #print(f"ws: {ws}")
                 self.ws.extend(ws)
                 
             elif M[0][1] == 0 and M[1][0] == 0: # ones matrix means a mirror - change of the direction

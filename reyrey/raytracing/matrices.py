@@ -26,7 +26,7 @@ def flatrefraction(n1 = 1, n2 = 1):
 testSystem = [
 {"ABCD": free(l = 20E-3), "label": None},
 {"ABCD": thinlens(f = 40E-3), "label": "f1 = 40 mm"},
-{"ABCD": free(l = 45E-3), "label": None},
+{"ABCD": free(l = 90E-3), "label": None},
 {"ABCD": thinlens(f = 40E-3), "label": "f2 = 40 mm"},
 {"ABCD": free(l = 60E-3), "label": None},
 {"ABCD": thinlens(f = 250E-3), "label": "f3 = 250 mm"},

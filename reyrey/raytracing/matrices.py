@@ -67,8 +67,8 @@ def ringCavity(l_focus = 60.105E-3, l_free = 100E-3, l_crystal = 30E-3, R = 50E-
 
 
 d1 = 20E-3
-d2 = 90E-3
-d3 = 60E-3
+d2 = 89E-3
+d3 = 150E-3
 df = 300E-3
 d4 = d1+d2+d3
 
@@ -76,7 +76,7 @@ testTelescope = [
 {"ABCD": free(l = d1), "label": None},
 {"ABCD": thinlens(f = 40E-3), "label": "f1 = 40 mm"},
 {"ABCD": free(l = d2), "label": None},
-{"ABCD": thinlens(f = 40E-3), "label": "f2 = 40 mm"},
+{"ABCD": thinlens(f = 50E-3), "label": "f2 = 40 mm"},
 {"ABCD": free(l = d3), "label": None},
 {"ABCD": thinlens(f = 250E-3), "label": "f3 = 250 mm"},
 {"ABCD": free(l = df), "label": None}

@@ -24,13 +24,14 @@ cavverey = rey.BeamTrace(cavityverM, rey.calcq(Z = 0, lam = 972E-9, W = wver, n 
 cavverey.constructRey()
 
 minw = 2E-3
+mind = 0
 for i in range(len(telerey.xs)):
     if telerey.xs[i] >= mat.d4:
         if telerey.ws[i] <= minw:
             minw = telerey.ws[i]
             mind = i
 
-print(f"minw: {minw} at x: {telerey.xs[mind]}")
+print(f"minw: {minw:.4} at x: {telerey.xs[mind]:.4}")
 
 xoffset = telerey.xs[mind]
 plt.plot(telerey.xs,telerey.ws)

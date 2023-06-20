@@ -18,9 +18,9 @@ print(whor)
 
 telerey = rey.BeamTrace(teleM, rey.calcq(Z = 0, lam = 972E-9, W = 2E-3, n = 1),n_points = 10000)
 telerey.constructRey()
-cavhorey = rey.BeamTrace(cavityhorM, rey.calcq(Z = 0, lam = 972E-9, W = whor, n = 1),n_points = 10000)
+cavhorey = rey.BeamTrace(cavityhorM, rey.calcq(Z = 0, lam = 972E-9, W = whor, n = 1),n_points = 20000)
 cavhorey.constructRey()
-cavverey = rey.BeamTrace(cavityverM, rey.calcq(Z = 0, lam = 972E-9, W = wver, n = 1),n_points = 10000)
+cavverey = rey.BeamTrace(cavityverM, rey.calcq(Z = 0, lam = 972E-9, W = wver, n = 1),n_points = 20000)
 cavverey.constructRey()
 
 minw = 2E-3

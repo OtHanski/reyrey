@@ -32,7 +32,7 @@ def flatrefraction(n1 = 1, n2 = 1):
     return array([[1,0],
                   [0,n1/n2]])
 
-def ringCavity(l_focus = 60.11E-3, l_free = 105E-3, l_crystal = 30E-3, R = 50E-3, n_crystal = 1.567, theta = radians(8)):
+def ringCavity(l_focus = 60.11E-3, l_free = 115E-3, l_crystal = 30E-3, R = 50E-3, n_crystal = 1.567, theta = radians(8)):
     """Returns the dict for a ringCavity"""
     #l_focus = 60.105E-3, l_free = 108E-3, l_crystal = 30E-3, R = 50E-3, n_crystal = 1.567, theta = radians(8)
     l_diagonal=(l_focus+l_free)/(2*cos(theta))
@@ -69,7 +69,7 @@ def ringCavity(l_focus = 60.11E-3, l_free = 105E-3, l_crystal = 30E-3, R = 50E-3
 
 lenses = 2
 d1 = 20E-3
-d2 = 82.9E-3
+d2 = 82.5E-3
 d3 = 240E-3
 df = 1000E-3
 

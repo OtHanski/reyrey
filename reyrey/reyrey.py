@@ -34,7 +34,8 @@ for i in range(len(telerey.xs)):
 print(f"minw: {minw:.4} at x: {telerey.xs[mind]:.4}")
 
 xoffset = telerey.xs[mind]
-#plt.plot(telerey.xs,telerey.ws)
-plt.plot(cavverey.xs+xoffset-cavverey.xs[-1]/2,cavverey.ws)
-plt.plot(cavhorey.xs+xoffset-cavhorey.xs[-1]/2,cavhorey.ws)
+plt.plot(telerey.xs,telerey.ws, label = "Coupling beam")
+plt.plot(cavverey.xs+xoffset-cavverey.xs[-1]/2,cavverey.ws, label = "cavver")
+plt.plot(cavhorey.xs+xoffset-cavhorey.xs[-1]/2,cavhorey.ws, label = "cavhor")
+plt.legend()
 plt.show()

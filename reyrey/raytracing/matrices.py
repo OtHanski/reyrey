@@ -32,35 +32,31 @@ def flatrefraction(n1 = 1, n2 = 1):
     return array([[1,0],
                   [0,n1/n2]])
 
-def ringCavity(l_focus = 60.11E-3, l_free = 115E-3, l_crystal = 30E-3, R = 50E-3, n_crystal = 1.567, theta = radians(8)):
+def ringCavity(l_focus = 60.105E-3, l_free = 97.7E-3, l_crystal = 15E-3, R = 50E-3, n_crystal = 1.567, theta = radians(8)):
     """Returns the dict for a ringCavity"""
     #l_focus = 60.105E-3, l_free = 108E-3, l_crystal = 30E-3, R = 50E-3, n_crystal = 1.567, theta = radians(8)
-    l_diagonal=(l_focus+l_free)/(2*cos(theta))
+    l_diagonal=(l_focus+l_free)/(2*cos(2*theta))
     
     cavityhor = [
-        {"ABCD": free(l = l_crystal/2), "label": None},
-        {"ABCD": flatrefraction(n1 = n_crystal), "label": None},
+        {"ABCD": free(l = l_crystal/(2*n_crystal)), "label": None},
         {"ABCD": free(l = (l_focus-l_crystal)/2), "label": None},
         {"ABCD": curvedmirrorhor(R = R, theta = theta), "label": f"R = {R*1E3} mm"},
         {"ABCD": free(l = (2*l_diagonal+l_free)/2), "label": None},
         {"ABCD": free(l = (2*l_diagonal+l_free)/2), "label": None},
         {"ABCD": curvedmirrorhor(R = R, theta = theta), "label": f"R = {R*1E3} mm"},
         {"ABCD": free(l = (l_focus-l_crystal)/2), "label": None},
-        {"ABCD": flatrefraction(n2 = n_crystal), "label": None},
-        {"ABCD": free(l = l_crystal/2), "label": None}
+        {"ABCD": free(l = l_crystal/(2*n_crystal)), "label": None}
         ]
     
     cavityver = [
-        {"ABCD": free(l = l_crystal/2), "label": None},
-        {"ABCD": flatrefraction(n1 = n_crystal), "label": None},
+        {"ABCD": free(l = l_crystal/(2*n_crystal)), "label": None},
         {"ABCD": free(l = (l_focus-l_crystal)/2), "label": None},
         {"ABCD": curvedmirrorver(R = R, theta = theta), "label": f"R = {R*1E3} mm"},
         {"ABCD": free(l = (2*l_diagonal+l_free)/2), "label": None},
         {"ABCD": free(l = (2*l_diagonal+l_free)/2), "label": None},
         {"ABCD": curvedmirrorver(R = R, theta = theta), "label": f"R = {R*1E3} mm"},
         {"ABCD": free(l = (l_focus-l_crystal)/2), "label": None},
-        {"ABCD": flatrefraction(n2 = n_crystal), "label": None},
-        {"ABCD": free(l = l_crystal/2), "label": None}
+        {"ABCD": free(l = l_crystal/(2*n_crystal)), "label": None}
         ]
     
     return {"hor": cavityhor, "ver": cavityver}
@@ -69,9 +65,9 @@ def ringCavity(l_focus = 60.11E-3, l_free = 115E-3, l_crystal = 30E-3, R = 50E-3
 
 lenses = 2
 d1 = 20E-3
-d2 = 82.5E-3
-d3 = 240E-3
-df = 1000E-3
+d2 = 81.225E-3
+d3 = 40E-3
+df = 2000E-3
 
 if lenses == 1:
     testTelescope = [
@@ -94,7 +90,7 @@ if lenses == 3:
     {"ABCD": free(l = d1), "label": None},
     {"ABCD": thinlens(f = 40E-3), "label": "f1 = 40 mm"},
     {"ABCD": free(l = d2), "label": None},
-    {"ABCD": thinlens(f = 50E-3), "label": "f2 = 40 mm"},
+    {"ABCD": thinlens(f = 40E-3), "label": "f2 = 40 mm"},
     {"ABCD": free(l = d3), "label": None},
     {"ABCD": thinlens(f = 250E-3), "label": "f3 = 250 mm"},
     {"ABCD": free(l = df), "label": None}

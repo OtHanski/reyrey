@@ -61,13 +61,17 @@ def ringCavity(l_focus = 60.105E-3, l_free = 97.7E-3, l_crystal = 15E-3, R = 50E
     
     return {"hor": cavityhor, "ver": cavityver}
 
+def linCavity(l_cavity = 60.105E-3, l_free = 97.7E-3, l_crystal = 15E-3, R = 50E-3):
+    pass
 
 
 lenses = 2
 d1 = 20E-3
-d2 = 81.225E-3
-d3 = 40E-3
-df = 2000E-3
+d2 = 143E-3
+d3 = 55E-3
+df = 700E-3
+
+# Working two lens: 40mm + 40 mm, distance 81.225mm
 
 if lenses == 1:
     testTelescope = [
@@ -79,7 +83,7 @@ if lenses == 1:
 if lenses == 2:
     testTelescope = [
     {"ABCD": free(l = d1), "label": None},
-    {"ABCD": thinlens(f = 40E-3), "label": "f1 = 40 mm"},
+    {"ABCD": thinlens(f = 100E-3), "label": "f1 = 40 mm"},
     {"ABCD": free(l = d2), "label": None},
     {"ABCD": thinlens(f = 40E-3), "label": "f3 = 250 mm"},
     {"ABCD": free(l = df), "label": None}
@@ -88,11 +92,11 @@ if lenses == 2:
 if lenses == 3:
     testTelescope = [
     {"ABCD": free(l = d1), "label": None},
-    {"ABCD": thinlens(f = 40E-3), "label": "f1 = 40 mm"},
+    {"ABCD": thinlens(f = 100E-3), "label": "f1 = 40 mm"},
     {"ABCD": free(l = d2), "label": None},
     {"ABCD": thinlens(f = 40E-3), "label": "f2 = 40 mm"},
     {"ABCD": free(l = d3), "label": None},
-    {"ABCD": thinlens(f = 250E-3), "label": "f3 = 250 mm"},
+    {"ABCD": thinlens(f = 40E-3), "label": "f3 = 250 mm"},
     {"ABCD": free(l = df), "label": None}
     ]
     d4 = d1+d2+d3

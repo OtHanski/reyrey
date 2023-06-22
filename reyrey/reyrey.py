@@ -33,7 +33,7 @@ for i in range(len(telerey.xs)):
             minw = telerey.ws[i]
             mind = i
 print(len(cavhorey.ws)/2)
-print(f"minw: {minw:.4} at x: {telerey.xs[mind]:.4}\nhorfoc: {cavhorey.ws[0]*1E6:.6}, hormatch: {cavhorey.ws[int(len(cavhorey.ws)/2)]*1E6:.6}\nverfoc: {cavverey.ws[0]*1E6:.4}, vermatch: {cavverey.ws[int(len(cavverey.ws)/2)]*1E6:.4}\ndiff: {(cavhorey.ws[int(len(cavhorey.ws)/2)]-cavverey.ws[int(len(cavverey.ws)/2)])*1E6:.4}")
+print(f"minw: {minw:.4} at x: {telerey.xs[mind]-mat.d4:.4}\nhorfoc: {cavhorey.ws[0]*1E6:.6}, hormatch: {cavhorey.ws[int(len(cavhorey.ws)/2)]*1E6:.6}\nverfoc: {cavverey.ws[0]*1E6:.4}, vermatch: {cavverey.ws[int(len(cavverey.ws)/2)]*1E6:.4}\ndiff: {(cavhorey.ws[int(len(cavhorey.ws)/2)]-cavverey.ws[int(len(cavverey.ws)/2)])*1E6:.4}")
 
 xoffset = telerey.xs[mind]
 plt.plot(telerey.xs,telerey.ws, label = "Coupling beam")

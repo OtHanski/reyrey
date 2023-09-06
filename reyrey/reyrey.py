@@ -5,6 +5,7 @@ from numpy import argmin
 
 tele = mat.testTelescope
 cav = mat.ringCavity()
+cav = mat.linCavity()
 cavityhorM = rey.buildMatrixList(cav["hor"])
 cavityverM = rey.buildMatrixList(cav["ver"])
 teleM = rey.buildMatrixList(tele)

@@ -96,7 +96,7 @@ class BeamTrace:
         for M in self.matrexes:
             
             if type(M) == str: # it is a label to save current beam parameter
-                    self.qs_to_print.append((M,get_w(q_in,lda),q_in))
+                    self.qs_to_print.append((M,w_z(q_in,lda),q_in))
                     print(self.qs_to_print[-1])
                     continue
                     

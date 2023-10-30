@@ -59,13 +59,15 @@ def cavityq(ABCD):
 
 def z_r(w0,lda):
     """Calculates rayleigh range [m], w0 - waist [m], lda - wavelength [m]"""
+    #print(f"w0: {w0}\nzr: {pi*w0**2/lda}")
     return (pi*w0**2/lda)
 
 def w_z(z,lda,zr=None,w0=None,z0=0):
-    """calculates beam radius [m] based on z_r - rayleigh range [m] or waist radios w0 [m],lda - wavelength [m]"""
+    """calculates beam radius [m] based on z_r - rayleigh range [m] or waist radius w0 [m],lda - wavelength [m]"""
     if zr == None:
         zr = z_r(w0,lda)
     try:
+        #print(f"lda / pi * zr: {(lda / pi * zr)**(1/2)}\n1 + (z-z0)**2/zr**2: {1 + (z-z0)**2/zr**2}")
         return (lda / pi * zr)**(1/2)*(1 + (z-z0)**2/zr**2)**(1/2)
     except:
         print(f"lda:{lda}\nzr: {zr}\nz: {z}")
@@ -75,7 +77,7 @@ def w_z(z,lda,zr=None,w0=None,z0=0):
         return 0
 
 class BeamTrace:
-    def __init__(self,matrexes,q_in,z0=0, n_points=1000):
+    def __init__(self,matrexes,q_in,z0=0, n_points=1000, lda = 972E-9):
         self.n_points = n_points
         self.z0 = z0 #distance from q_in point to 0, needed only for convinience
         self.matrexes = matrexes # array of matrixes or labels - strings (names) at wich to calculate q-parameter
@@ -83,6 +85,8 @@ class BeamTrace:
         self.ws = [] # beam waists vs. xs
         self.qz_to_print = [] # future array of (label,q) for labels in matrexes
         self.q_in = q_in # initial q-parameter of the beam
+        self.zr = 0 # Save rayleigh length
+        self.lda = lda
         
     def constructRey(self,lda = 972E-9):
         """Function that construct waists vs x posision"""
@@ -119,5 +123,5 @@ class BeamTrace:
                 direction *= 1
                 continue
             q_in = transformq(M,q_in) #calculate new q-parameter for the next matrix
-
+        self.zr = z_r(self.ws[0], lda)
 

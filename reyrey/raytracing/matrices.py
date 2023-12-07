@@ -1,5 +1,5 @@
 from numpy import inf,array
-from math import radians, cos
+from math import radians, cos, sin
 
 def free(l = 0):
     """Free space matrix, l - optical path [meters] = d*n, n-reflactive index, d-real distance"""
@@ -32,10 +32,11 @@ def flatrefraction(n1 = 1, n2 = 1):
     return array([[1,0],
                   [0,n1/n2]])
 
-def ringCavity(l_focus = 61E-3, l_free = 72E-3, l_crystal = 15E-3, R = 50E-3, n_crystal = 1.567, theta = radians(12)):
+def ringCavity(l_focus = 61.6E-3, l_free = 58E-3, l_crystal = 15E-3, R = 50E-3, n_crystal = 1.567, theta = radians(20)):
     """Returns the dict for a ringCavity"""
     #l_focus = 60.105E-3, l_free = 108E-3, l_crystal = 30E-3, R = 50E-3, n_crystal = 1.567, theta = radians(8)
     l_diagonal=(l_focus+l_free)/(2*cos(2*theta))
+    print(f"Cavity height: {sin(theta)*l_diagonal}")
     
     cavityhor = [
         {"ABCD": free(l = l_crystal/(2*n_crystal)), "label": None},

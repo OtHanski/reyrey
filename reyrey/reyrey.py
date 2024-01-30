@@ -40,7 +40,6 @@ print(f"minw: {minw:.4} at x: {telerey.xs[mind]-mat.d4:.4}\nhorfoc: {cavhorey.ws
       \nhormatch: {cavhorey.ws[int(len(cavhorey.ws)/2)]*1E6:.6}\nverfoc: {cavverey.ws[0]*1E6:.4},\
       \nvermatch: {cavverey.ws[int(len(cavverey.ws)/2)]*1E6:.4}\
       \ndiff: {(cavhorey.ws[int(len(cavhorey.ws)/2)]-cavverey.ws[int(len(cavverey.ws)/2)])*1E6:.4}\
-      \nfdiff: {(cavhorey.ws[0]-cavverey.ws[0])*1E6}\
       \nZ_rh: {cavhorey.zr}\nZ_rv: {cavverey.zr}")
 
 xoffset = telerey.xs[mind]

@@ -32,11 +32,8 @@ def flatrefraction(n1 = 1, n2 = 1):
     return array([[1,0],
                   [0,n1/n2]])
 
-# old settings l_focus = 61.1E-3, l_free = 62E-3, l_crystal = 15E-3, R = 50E-3, n_crystal = 1.567, theta = radians(18.2)
-# measurements l_foc = 62.1, l_free = 62, h = 24, theta = degrees(atan(height/foc))/2 = 10.5
-# 250 um/rev
-def ringCavity(l_focus = 58E-3, l_free = 120E-3, l_crystal = 15E-3, R = 50E-3, n_crystal = 1.567, theta = radians(10)):
-    """Returns the dict for a ringCavity""" 
+def ringCavity(l_focus = 61.6E-3, l_free = 69.3E-3, l_crystal = 15E-3, R = 50E-3, n_crystal = 1.567, theta = radians(18.2)):
+    """Returns the dict for a ringCavity"""
     #l_focus = 60.105E-3, l_free = 108E-3, l_crystal = 30E-3, R = 50E-3, n_crystal = 1.567, theta = radians(8)
     l_diagonal=(l_focus+l_free)/(2*cos(2*theta))
     print(f"Cavity height: {sin(theta)*l_diagonal}")
@@ -82,7 +79,7 @@ def linCavity(l_cavity = 75E-3, R = 50E-3):
 
 lenses = 2
 d1 = 50E-3
-d2 = 126.7E-3
+d2 = 102E-3
 d3 = 55E-3
 df = 1500E-3
 
@@ -91,16 +88,16 @@ df = 1500E-3
 if lenses == 1:
     testTelescope = [
     {"ABCD": free(l = d1), "label": None},
-    {"ABCD": thinlens(f = 300E-3), "label": "f3 = 250 mm"},
+    {"ABCD": thinlens(f = 500E-3), "label": "f3 = 250 mm"},
     {"ABCD": free(l = df), "label": None}
     ]
     d4 = d1
 if lenses == 2:
     testTelescope = [
     {"ABCD": free(l = d1), "label": None},
-    {"ABCD": thinlens(f = 100E-3), "label": "f1 = 40 mm"},
+    {"ABCD": thinlens(f = 60E-3), "label": "f1 = 40 mm"},
     {"ABCD": free(l = d2), "label": None},
-    {"ABCD": thinlens(f = 25.4E-3), "label": "f3 = 250 mm"},
+    {"ABCD": thinlens(f = 40E-3), "label": "f3 = 250 mm"},
     {"ABCD": free(l = df), "label": None}
     ]
     d4 = d1+d2

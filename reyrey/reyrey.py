@@ -21,11 +21,11 @@ whor = rey.cavityq(horABCD)
 wver = rey.cavityq(verABCD)
 print(whor)
 
-telerey = rey.BeamTrace(teleM, rey.calcq(Z = 0, lam = 972E-9, W = 2E-3, n = 1),n_points = samples, lda = 972E-9)
+telerey = rey.BeamTrace(teleM, rey.calcq(Z = 0, lam = 486E-9, W = 2E-3, n = 1),n_points = samples, lda = 972E-9)
 telerey.constructRey()
-cavhorey = rey.BeamTrace(cavityhorM, q_in = 1j*whor ,n_points = 2*samples, lda = 972E-9)
+cavhorey = rey.BeamTrace(cavityhorM, q_in = 1j*whor ,n_points = 2*samples, lda = 486E-9)
 cavhorey.constructRey()
-cavverey = rey.BeamTrace(cavityverM, q_in = 1j*wver ,n_points = 2*samples, lda = 972E-9)
+cavverey = rey.BeamTrace(cavityverM, q_in = 1j*wver ,n_points = 2*samples, lda = 486E-9)
 cavverey.constructRey()
 
 minw = 2E-3
@@ -43,7 +43,7 @@ print(f"minw: {minw:.4} at x: {telerey.xs[mind]-mat.d4:.4}\nhorfoc: {cavhorey.ws
       \nZ_rh: {cavhorey.zr}\nZ_rv: {cavverey.zr}")
 
 xoffset = telerey.xs[mind]
-plt.plot(telerey.xs,telerey.ws, label = "Coupling beam")
+#plt.plot(telerey.xs,telerey.ws, label = "Coupling beam")
 plt.plot(cavverey.xs+xoffset-cavverey.xs[-1]/2,cavverey.ws, label = "cavver")
 plt.plot(cavhorey.xs+xoffset-cavhorey.xs[-1]/2,cavhorey.ws, label = "cavhor")
 plt.legend()

@@ -28,14 +28,16 @@ cavhorey.constructRey()
 cavverey = rey.BeamTrace(cavityverM, q_in = 1j*wver ,n_points = 2*samples, lda = 486E-9)
 cavverey.constructRey()
 
-minw = 2E-3
+minw = 10E-3
 mind = 0
 for i in range(len(telerey.xs)):
     if telerey.xs[i] >= mat.d4:
         if telerey.ws[i] <= minw:
             minw = telerey.ws[i]
             mind = i
+print(mind)
 #print(len(cavhorey.ws)/2)
+print(mat.d4)
 print(f"minw: {minw:.4} at x: {telerey.xs[mind]-mat.d4:.4}\nhorfoc: {cavhorey.ws[0]*1E6:.6},\
       \nhormatch: {cavhorey.ws[int(len(cavhorey.ws)/2)]*1E6:.6}\nverfoc: {cavverey.ws[0]*1E6:.4},\
       \nvermatch: {cavverey.ws[int(len(cavverey.ws)/2)]*1E6:.4}\
@@ -43,7 +45,8 @@ print(f"minw: {minw:.4} at x: {telerey.xs[mind]-mat.d4:.4}\nhorfoc: {cavhorey.ws
       \nZ_rh: {cavhorey.zr}\nZ_rv: {cavverey.zr}")
 
 xoffset = telerey.xs[mind]
-#plt.plot(telerey.xs,telerey.ws, label = "Coupling beam")
+print(xoffset)
+plt.plot(telerey.xs,telerey.ws, label = "Coupling beam")
 plt.plot(cavverey.xs+xoffset-cavverey.xs[-1]/2,cavverey.ws, label = "cavver")
 plt.plot(cavhorey.xs+xoffset-cavhorey.xs[-1]/2,cavhorey.ws, label = "cavhor")
 plt.legend()

@@ -79,9 +79,9 @@ def linCavity(l_cavity = 75E-3, R = 50E-3):
 
 lenses = 2
 d1 = 50E-3
-d2 = 102E-3
+d2 = 201.8E-3
 d3 = 55E-3
-df = 1500E-3
+df = 2000E-3
 
 # Working two lens: 40mm + 40 mm, distance 81.225mm
 
@@ -95,9 +95,9 @@ if lenses == 1:
 if lenses == 2:
     testTelescope = [
     {"ABCD": free(l = d1), "label": None},
-    {"ABCD": thinlens(f = 60E-3), "label": "f1 = 40 mm"},
+    {"ABCD": thinlens(f = 150E-3), "label": "f1 = 40 mm"},
     {"ABCD": free(l = d2), "label": None},
-    {"ABCD": thinlens(f = 40E-3), "label": "f3 = 250 mm"},
+    {"ABCD": thinlens(f = 50E-3), "label": "f3 = 250 mm"},
     {"ABCD": free(l = df), "label": None}
     ]
     d4 = d1+d2

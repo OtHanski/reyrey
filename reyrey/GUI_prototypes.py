@@ -170,6 +170,7 @@ GUI_PROTOTYPES = {
                                                 },
                                  }
                             },
+                }
     }
 
 GUI_PROTOTYPE_MAP = {

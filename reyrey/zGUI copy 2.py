@@ -5,7 +5,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import numpy as np
 
 # Import the GUI component prototypes and init functions
-from GUI_components import GUI_PROTOTYPES, init_element
+from reyrey.GUI_prototypes import GUI_PROTOTYPES, init_element
 
 def generate_plot_dataA(x, amplitude, frequency, phase):
     return amplitude * np.sin(frequency * x)

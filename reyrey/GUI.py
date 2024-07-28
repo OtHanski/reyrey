@@ -5,7 +5,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import numpy as np
 
 # Import the GUI component prototypes and init functions
-from GUI_components import *
+from reyrey.GUI_prototypes import *
 
 def generate_plot_dataA(x, ui_elements):
     amplitude = ui_elements["amplitude"]["val"].get()
@@ -57,11 +57,6 @@ class App:
         
         self.paramcanvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
-
-
-        # Frame to hold parameter entries
-        #self.parameters_frame = ttk.Frame(self.paramcanvas)
-        #self.parameters_frame.pack(pady=10)
 
         # List to hold parameter entries
         self.parameters = []
@@ -115,7 +110,11 @@ class App:
         print(ui_elements["shared"]["function"]["val"].get())
         plot_function = self.get_selected_function(ui_elements["shared"]["function"]["val"].get())
         print(plot_function)
-        y = plot_function(self.x, ui_elements)
+        try:
+            y = plot_function(self.x, ui_elements)
+        except:
+            print("Error in plot function")
+            y = np.zeros_like(self.x)
         line, = self.ax.plot(self.x, y)
         self.lines.append(line)
 

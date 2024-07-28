@@ -92,7 +92,7 @@ class App:
     def test_func(self, param_frame):
         print("Test function called")
 
-    def add_parameter(self, prototype = copy_prototype(GUI_PROTOTYPES["sine_wave"])):
+    def add_parameter(self, prototype = 0):
         """
         Add a new parameter to GUI with default ui_elements
         """
@@ -101,8 +101,9 @@ class App:
         param_frame.pack(pady=5, fill=tk.X)
 
         # Initialize for default element, for now genplotA
+        if prototype == 0:
+            prototype = copy_prototype(GUI_PROTOTYPES["sine_wave"])
         ui_elements = prototype
-        print(GUI_PROTOTYPES["sine_wave"],"\n\n")
         # Add the function dropdown and remove button in the first row
         init_element(param_frame, ui_elements)
         ui_elements["shared"]["function"]["combobox_func"] = self.update_parameters
@@ -120,7 +121,6 @@ class App:
 
         self.update_plot()
         
-        print(repr(GUI_PROTOTYPES["sine_wave"]))
         return ui_elements
 
     def update_parameters(self, param_frame, ui_elements):
@@ -129,8 +129,7 @@ class App:
         function_val = ui_elements["shared"]["function"]["val"].get()
         val_index = ui_elements["shared"]["function"]["elem"].current()
         new_proto = copy_prototype(GUI_PROTOTYPES[GUI_PROTOTYPE_MAP[function_val]])
-        new_proto["shared"]["function"]["elem"].current(val_index)
-        print("\nHELLO THERE, VALINDEX: ",ui_elements["shared"]["function"]["elem"].current())
+        new_proto["shared"]["function"]["default"] = val_index
         self.remove_parameter(param_frame)
         self.add_parameter(new_proto)
 

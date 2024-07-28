@@ -56,14 +56,10 @@ def init_element(parent_frame, ui_elements: dict):
                 The dictionary of UI elements to be initialized."""
     
     # First, initialize the shared UI components
-    
-    print("\nInitializing shared\n")
-    #print(ui_elements)
     for key, value in ui_elements.items():
         if key == "shared":
             init_shared(parent_frame, ui_elements)
             continue
-        print(key, value)
         if "label" in value:
             value["label"] = ttk.Label(parent_frame, text=value["label"][0]).grid(row=value["label"][1][0], column=value["label"][1][1], padx=5, pady=5)
         if value["type"] == "dropdown":
@@ -78,8 +74,6 @@ def init_element(parent_frame, ui_elements: dict):
             value["elem"] = ttk.Button(parent_frame, text="Remove", command=lambda: value["func"])
             value["elem"].grid(row=value["location"][0], column=value["location"][1], padx=5, pady=5)
         
-    print("\nFinishing shared\n")
-    #print(ui_elements)
 
 GUI_SHARED_PROTOTYPE = {
                         "function": {"val": ("","string"),

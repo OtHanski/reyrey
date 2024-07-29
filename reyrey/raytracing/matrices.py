@@ -113,3 +113,26 @@ if lenses == 3:
     ]
     d4 = d1+d2+d3
 testCavity = None
+
+matrixdicts = {
+    "free": {"func": free,
+             "params": ["l"],
+             "label": "Free space",
+            },
+    "thinlens": {"func": thinlens,
+             "params": ["f"],
+             "label": "Thin lens",
+            },
+    "curvedmirror": {"func": {"hor": curvedmirrorhor, "ver": curvedmirrorver},
+             "params": ["R", "θ"],
+             "label": "Curved mirror",
+            },
+    "thicklens": {"func": thicklens,
+             "params": [],
+             "label": "Thick lens (not implemented)",
+            },
+    "flatrefraction": {"func": flatrefraction,
+             "params": ["n1", "n2"],
+             "label": "Flat refraction",
+            },
+    }

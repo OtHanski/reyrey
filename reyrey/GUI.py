@@ -5,7 +5,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import numpy as np
 
 # Import the GUI component prototypes and init functions
-from reyrey.GUI_prototypes import *
+from GUI_prototypes import *
 
 def generate_plot_dataA(x, ui_elements):
     amplitude = ui_elements["amplitude"]["val"].get()

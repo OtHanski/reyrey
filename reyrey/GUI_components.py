@@ -11,10 +11,24 @@ class LineParameter:
 
         self.combo_vals = [key for (key,value) in matrixdicts.items()]
         self.component = ttk.Combobox(self.frame, values=self.combo_vals).grid(row=0, column=0, padx=5)
+        self.component.current(0)
 
         self.remove_button = ttk.Button(self.frame, text="Remove", command=self.remove).grid(row=0, column=1, padx=5)
 
         self.fields = {}
+        
+    
+    def init_fields(self):
+        i = 1
+        for key, value in matrixdicts[self.combo_vals[0]].items():
+            print(key, value)
+            self.fields[key] = {}
+            self.fields[key]["label"] = ttk.Label(self.frame, text=key).grid(row=i, column=0, padx=5)
+            self.fields[key]["val"] = tk.StringVar(value=str(value))
+            self.fields[key]["elem"] = ttk.Entry(self.frame, textvariable=self.fields[key]["val"])
+            self.fields[key]["elem"].grid(row=i, column=1, padx=5)
+
+            i += 1
 
     def remove(self):
         self.frame.destroy()
@@ -45,6 +59,9 @@ class OpticalLine:
         self.hor = tk.IntVar()
         self.hor_check = ttk.Checkbutton(self.button_frame, text="Horizontal", variable=self.hor)
         self.hor_check.grid(row=1, column=1, padx=5)
+        # Replot button
+        self.replot_button = ttk.Button(self.button_frame, text="Replot", command=self.replot)
+        self.replot_button.grid(row=1, column=2, padx=5)
 
         self.componentframe = ttk.LabelFrame(parent, text="Optical Line", relief=tk.RIDGE)
         self.componentframe.pack(pady=5, fill=tk.X)
@@ -53,6 +70,9 @@ class OpticalLine:
         pass
     
     def showhide(self):
+        pass
+
+    def replot(self):
         pass
 
 def test():

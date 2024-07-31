@@ -118,21 +118,26 @@ matrixdicts = {
     "free": {"func": free,
              "params": ["l"],
              "label": "Free space",
+             "horver": False
             },
     "thinlens": {"func": thinlens,
              "params": ["f"],
              "label": "Thin lens",
+             "horver": True
             },
     "curvedmirror": {"func": {"hor": curvedmirrorhor, "ver": curvedmirrorver},
              "params": ["R", "θ"],
              "label": "Curved mirror",
+             "horver": True
             },
     "thicklens": {"func": thicklens,
              "params": [],
              "label": "Thick lens (not implemented)",
+             "horver": True
             },
     "flatrefraction": {"func": flatrefraction,
              "params": ["n1", "n2"],
              "label": "Flat refraction",
+             "horver": False
             },
     }

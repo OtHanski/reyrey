@@ -1,17 +1,6 @@
 from numpy import inf,array
 from math import radians, cos, sin
 
-def GUI_matrix(params: dict):
-    """Return the matrix for the GUI element"""
-    func = params["func"]
-    match func:
-        case "free":
-            return free(l = params["l"])
-        case "thinlens":
-            return thinlens(f = params["f"])
-        case "curvedmirror":
-            return curvedmirrorhor(R = params["R"], theta = params["θ"])
-
 def free(l = 0):
     """Free space matrix, l - optical path [meters] = d*n, n-reflactive index, d-real distance"""
     return array([[1,l],

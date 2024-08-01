@@ -35,20 +35,20 @@ class LineParameter:
         
      
     def init_fields(self):
-        i = 1
+        i = 0
         for param in matrixdicts[self.get_function()]["params"]:
             self.fields[f"label{i}"] = ttk.Label(self.frame, text=param)
-            self.fields[f"label{i}"].grid(row=i, column=0, padx=5)
+            self.fields[f"label{i}"].grid(row=i+1, column=0, padx=5)
             self.fields[f"val{i}"] = tk.DoubleVar(value=0)
             self.fields[f"elem{i}"] = ttk.Entry(self.frame, textvariable=self.fields[f"val{i}"])
-            self.fields[f"elem{i}"].grid(row=i, column=1, padx=5)
+            self.fields[f"elem{i}"].grid(row=i+1, column=1, padx=5)
             i += 1
         
         horver = matrixdicts[self.get_function()]["horver"]
         self.fields["hor_check"] = ttk.Checkbutton(self.frame, text="Horizontal", variable=self.hor)
-        self.fields["hor_check"].grid(row=i, column=0, padx=5)
+        self.fields["hor_check"].grid(row=i+1, column=0, padx=5)
         self.fields["ver_check"] = ttk.Checkbutton(self.frame, text="Vertical", variable=self.ver)
-        self.fields["ver_check"].grid(row=i, column=1, padx=5)
+        self.fields["ver_check"].grid(row=i+1, column=1, padx=5)
         # Remove the hor and ver checkbuttons if the component doesn't support them
         if not horver:
             self.fields["hor_check"].destroy()
@@ -75,6 +75,15 @@ class LineParameter:
 
     def get_function(self):
         return self.component.get()
+    
+    def get_ABCD(self):
+        self.func = matrixdicts[self.get_function()]["func"]
+        print(self.func)
+        matrixparams = {key: self.fields[f"val{i}"].get() for i, key in enumerate(matrixdicts[self.get_function()]["params"])}
+        matrixparams["func"] = self.func
+        ABCD = matrixparams#matrixdicts[self.get_function()]["func"](**{key: self.fields[f"val{i}"].get() for i, key in enumerate(matrixdicts[self.get_function()]["params"])})
+        print(ABCD)
+        return ABCD
 
 
 class OpticalLine:
@@ -177,6 +186,8 @@ class OpticalLine:
 
     def replot(self):
         self.matrices = []
+        for param in self.parameters:
+            self.matrices.append(param.get_ABCD())
 
 def test():
     root = tk.Tk()

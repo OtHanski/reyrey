@@ -117,7 +117,7 @@ class OpticalLine:
     def __init__(self, parent, id = 0, location = (0,0)):
         self.parent = parent
         self.id = id
-        self.frame = ttk.LabelFrame(parent, text=f"Optical Line {id}", relief=tk.RIDGE)
+        self.frame = ttk.LabelFrame(parent, text=f"Controls")#, relief=tk.RIDGE)
         self.frame.grid(row=location[0], column=location[1], pady=5, sticky="news")
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
@@ -188,7 +188,7 @@ class OpticalLine:
         ### END INPUT BEAM FRAME ###
 
         ### COMPONENT FRAME ###
-        self.componentframe = ttk.LabelFrame(self.frame, text="Optical Line", relief=tk.RIDGE)
+        self.componentframe = ttk.LabelFrame(self.frame, text="Optical Line")#, relief=tk.RIDGE)
         self.componentframe.grid(row=2, column=0, pady=5, sticky="news")
         self.componentframe.columnconfigure(0, weight=1)
 

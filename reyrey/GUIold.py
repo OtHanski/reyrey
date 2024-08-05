@@ -4,13 +4,22 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import numpy as np
 
-def generate_plot_dataA(x, amplitude, frequency, phase):
+# Import the GUI component prototypes and init functions
+from GUI_prototypes import *
+
+def generate_plot_dataA(x, ui_elements):
+    amplitude = ui_elements["amplitude"]["val"].get()
+    frequency = ui_elements["frequency"]["val"].get()
     return amplitude * np.sin(frequency * x)
 
-def generate_plot_dataB(x, amplitude, frequency, phase):
+def generate_plot_dataB(x, ui_elements):
+    amplitude = ui_elements["amplitude"]["val"].get()
+    frequency = ui_elements["frequency"]["val"].get()
+    phase = ui_elements["phase"]["val"].get()
     return amplitude * np.cos(frequency * x + phase)
 
-
+def Optical_Line(x, ui_elements):
+    return x
 
 class App:
     def __init__(self, root):
@@ -49,11 +58,6 @@ class App:
         self.paramcanvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
 
-
-        # Frame to hold parameter entries
-        #self.parameters_frame = ttk.Frame(self.paramcanvas)
-        #self.parameters_frame.pack(pady=10)
-
         # List to hold parameter entries
         self.parameters = []
 
@@ -80,66 +84,57 @@ class App:
         self.sample_entry = ttk.Entry(sample_frame, textvariable=self.sample_var)
         self.sample_entry.pack(side=tk.LEFT, padx=5)
 
-    def add_parameter(self):
+    def test_func(self, param_frame):
+        print("Test function called")
+
+    def add_parameter(self, prototype = 0):
+        """
+        Add a new parameter to GUI with default ui_elements
+        """
+        print("\nAdding parameter\n")
         param_frame = ttk.LabelFrame(self.parameters_frame, text="Parameter Set", relief=tk.RIDGE)
         param_frame.pack(pady=5, fill=tk.X)
 
-        function_var = tk.StringVar()
-        amplitude = tk.DoubleVar(value=1.0)
-        frequency = tk.DoubleVar(value=1.0)
-        phase = tk.DoubleVar(value=0.0)
-
+        # Initialize for default element, for now genplotA
+        if prototype == 0:
+            prototype = copy_prototype(GUI_PROTOTYPES["sine_wave"])
+        ui_elements = prototype
         # Add the function dropdown and remove button in the first row
-        function_dropdown = ttk.Combobox(param_frame, textvariable=function_var)
-        function_dropdown['values'] = ('generate_plot_dataA', 'generate_plot_dataB')
-        function_dropdown.current(0)  # Set default value
-        function_dropdown.grid(row=0, column=0, padx=5, pady=5)
+        init_element(param_frame, ui_elements)
+        ui_elements["shared"]["function"]["combobox_func"] = self.update_parameters
+        ui_elements["shared"]["remove"]["func"] = self.remove_parameter
 
-        remove_button = ttk.Button(param_frame, text="Remove", command=lambda: self.remove_parameter(param_frame))
-        remove_button.grid(row=0, column=1, padx=5, pady=5)
-
-        # Add amplitude in the second row
-        ttk.Label(param_frame, text="Amplitude:").grid(row=1, column=0, padx=5, pady=5)
-        amplitude_entry = ttk.Entry(param_frame, textvariable=amplitude)
-        amplitude_entry.grid(row=1, column=1, padx=5, pady=5)
-
-        # Add frequency in the third row
-        ttk.Label(param_frame, text="Frequency:").grid(row=2, column=0, padx=5, pady=5)
-        frequency_entry = ttk.Entry(param_frame, textvariable=frequency)
-        frequency_entry.grid(row=2, column=1, padx=5, pady=5)
-
-        # Add phase in the fourth row (initially hidden for generate_plot_dataA)
-        phase_label = ttk.Label(param_frame, text="Phase:")
-        phase_entry = ttk.Entry(param_frame, textvariable=phase)
-
-        function_dropdown.bind("<<ComboboxSelected>>", lambda e: self.update_parameters(param_frame, function_var, phase_label, phase_entry))
-
-        self.parameters.append((param_frame, amplitude, frequency, phase, function_var))
+        self.parameters.append((param_frame, ui_elements))
 
         # Add a new line to the plot
-        plot_function = self.get_selected_function(function_var.get())
-        y = plot_function(self.x, amplitude.get(), frequency.get(), phase.get() if function_var.get() == 'generate_plot_dataB' else 0)
+        print(ui_elements["shared"]["function"]["val"].get())
+        plot_function = self.get_selected_function(ui_elements["shared"]["function"]["val"].get())
+        print(plot_function)
+        try:
+            y = plot_function(self.x, ui_elements)
+        except:
+            print("Error in plot function")
+            y = np.zeros_like(self.x)
         line, = self.ax.plot(self.x, y)
         self.lines.append(line)
 
         self.update_plot()
+        
+        return ui_elements
 
-    def update_parameters(self, param_frame, function_var, phase_label, phase_entry):
-        if function_var.get() == 'generate_plot_dataB':
-            phase_label.grid(row=3, column=0, padx=5, pady=5)
-            phase_entry.grid(row=3, column=1, padx=5, pady=5)
-        elif function_var.get() == 'generate_plot_dataA':
-            phase_label.grid_forget()
-            phase_entry.grid_forget()
-            pass
-        elif function_var.get() == 'Optical Line':
-            pass
-        else:
-            phase_label.grid_forget()
-            phase_entry.grid_forget()
+    def update_parameters(self, param_frame, ui_elements):
+        print("Updating parameters")
+        # Get the index of the function_val in the list of functions
+        function_val = ui_elements["shared"]["function"]["val"].get()
+        val_index = ui_elements["shared"]["function"]["elem"].current()
+        new_proto = copy_prototype(GUI_PROTOTYPES[GUI_PROTOTYPE_MAP[function_val]])
+        new_proto["shared"]["function"]["default"] = val_index
+        self.remove_parameter(param_frame)
+        self.add_parameter(new_proto)
 
     def remove_parameter(self, param_frame):
-        for i, (frame, amplitude, frequency, phase, function_var) in enumerate(self.parameters):
+        print("Removing parameter")
+        for i, (frame, ui_elements) in enumerate(self.parameters):
             if frame == param_frame:
                 # Remove the corresponding line from the plot
                 line = self.lines.pop(i)
@@ -147,18 +142,16 @@ class App:
                 self.parameters.pop(i)
                 frame.destroy()
                 break
-
+        print(self.lines)
         self.update_plot()
 
     def update_plot(self):
         num_samples = self.sample_var.get()
         self.x = np.linspace(0, 2 * np.pi, num_samples)
-        for line, (param_frame, amplitude, frequency, phase, function_var) in zip(self.lines, self.parameters):
+        for line, (param_frame, ui_elements) in zip(self.lines, self.parameters):
+            function_var = ui_elements["shared"]["function"]["val"]
             plot_function = self.get_selected_function(function_var.get())
-            if function_var.get() == 'generate_plot_dataA':
-                y = plot_function(self.x, amplitude.get(), frequency.get(), 0)
-            else:
-                y = plot_function(self.x, amplitude.get(), frequency.get(), phase.get())
+            y = plot_function(self.x, ui_elements)
             line.set_ydata(y)
 
         self.ax.relim()
@@ -166,8 +159,13 @@ class App:
         self.canvas.draw()
 
     def get_selected_function(self, function_name):
+        print("Function name: ", function_name)
         if function_name == 'generate_plot_dataA':
             return generate_plot_dataA
+        if function_name == 'generate_plot_dataB':
+            return generate_plot_dataB
+        if function_name == 'Optical Line':
+            return Optical_Line
         else:
             return generate_plot_dataB
 

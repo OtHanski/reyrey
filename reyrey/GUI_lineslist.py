@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from raytracing.matrices import matrixdicts, ringCavity, linCavity
+from GUI_OpticalLine import OpticalLine
 import raytracing.matrixcalc as rey
 
 
@@ -79,7 +80,7 @@ class paramtan:
         self.frequency_entry.grid(row=1, column=1, padx=5)
 
 
-opticalitems = {"sine_wave": paramsine, "cosine_wave": paramcosine, "tangent_wave": paramtan}
+opticalitems = {"sine_wave": paramsine, "cosine_wave": paramcosine, "tangent_wave": paramtan, "Optical Line": OpticalLine}
 
 class LineParameter:
     """tkinter widget for a single line parameter"""
@@ -95,25 +96,41 @@ class LineParameter:
         self.frame.columnconfigure(0, weight=1)
         self.frame.columnconfigure(1, weight=1)
         self.frame.rowconfigure(0, weight=1)
+        self.frame.rowconfigure(1, weight=1) 
+        
+        self.buttonframe = ttk.Frame(self.frame)
+        self.buttonframe.grid(row=0, column=0, pady=5, sticky="news")
+        self.buttonframe.columnconfigure(0, weight=1)
+        self.buttonframe.columnconfigure(1, weight=1)
+        self.buttonframe.columnconfigure(2, weight=1)
 
         self.opticalitems = opticalitems
         self.combo_vals = [key for (key,value) in opticalitems.items()]
-        self.component = ttk.Combobox(self.frame, values=self.combo_vals)
+        self.component = ttk.Combobox(self.buttonframe, values=self.combo_vals)
         # Bind the combobox to the update_fields function
         self.component.bind("<<ComboboxSelected>>", lambda event: self.update_fields())
 
         self.component.grid(row=0, column=0, padx=5)
         self.component.current(0)
 
-        self.remove_button = ttk.Button(self.frame, text="Remove", command=self.remove).grid(row=0, column=1, padx=5)
+        self.remove_button = ttk.Button(self.buttonframe, text="Remove", command=self.remove).grid(row=0, column=1, padx=5)
 
         self.fields = {}
         self.init_fields()
         
      
     def init_fields(self):
+        self.fieldframe = ttk.Frame(self.frame)
+        self.fieldframe.grid(row=1, column=0, pady=5, sticky="news")
+        self.fieldframe.columnconfigure(0, weight=1)
+        self.fieldframe.columnconfigure(1, weight=1)
+        self.fieldframe.columnconfigure(2, weight=1)
+        self.fieldframe.rowconfigure(0, weight=1)
+        self.fieldframe.rowconfigure(1, weight=1)
+        self.fieldframe.rowconfigure(2, weight=1)
+
         i = len(self.fields)
-        self.fields[i] = self.opticalitems[self.get_function()](self.frame)
+        self.fields[i] = self.opticalitems[self.get_function()](self.fieldframe)
     
     def remove_fields(self):
         # Wipe old UI elements to replace with new
@@ -154,12 +171,12 @@ class LineParameter:
         return ABCD
 
 
-class OpticalLine:
-    """tkinter widget for a single optical line"""
-    def __init__(self, parent, id = 0, location = (0,0)):
+class LineGUI:
+    """tkinter widget for creating, editing and destroying optical lines"""
+    def __init__(self, parent, parentframe, id = 0, location = (0,0)):
         self.parent = parent
         self.id = id
-        self.frame = ttk.LabelFrame(parent, text=f"Optical Line {id}", relief=tk.RIDGE)
+        self.frame = ttk.LabelFrame(parentframe, text=f"Optical Beams")
         self.frame.grid(row=location[0], column=location[1], pady=5, sticky="news")
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
@@ -199,17 +216,13 @@ class OpticalLine:
         ### END BUTTON FRAME ###
 
         ### INPUT BEAM FRAME###
-        self.inputframe = ttk.LabelFrame(self.frame, text="Input Beam", relief=tk.RIDGE)
+        self.inputframe = ttk.LabelFrame(self.frame, text="Plotting parameters", relief=tk.RIDGE)
         self.inputframe.grid(row=1, column=0, pady=5, sticky="news")
         self.inputframe.columnconfigure(0, weight=1)
         self.inputframe.rowconfigure(0, weight=1)
 
         # (Z = 0, ZR = 0, lam = 0, W = 0, n = 1)
-        self.input = {"Z": tk.DoubleVar(value=0), # Distance from waist
-                      "ZR": tk.DoubleVar(value=0), # Rayleigh length
-                      "lam": tk.DoubleVar(value=972E-9), # Wavelength
-                      "W": tk.DoubleVar(value=1E-3), # Beam waist
-                      "n": tk.DoubleVar(value=1)} # Refractive index
+        self.input = {"Samples": tk.IntVar(value=1000)} # Refractive index
         self.input_widgets = {}
         i = 0
         for key in self.input:
@@ -220,7 +233,7 @@ class OpticalLine:
             i += 1
 
         ### COMPONENT FRAME ###
-        self.componentframe = ttk.LabelFrame(self.frame, text="Optical Line", relief=tk.RIDGE)
+        self.componentframe = ttk.LabelFrame(self.frame, text="Optical Line Drawer")#, relief=tk.RIDGE)
         self.componentframe.grid(row=2, column=0, pady=5, sticky="news")
         self.componentframe.columnconfigure(0, weight=1)
 
@@ -262,7 +275,7 @@ def test():
     root.title("Optical Line Test")
     tk.Grid.rowconfigure(root, 0, weight=1)
     tk.Grid.columnconfigure(root, 0, weight=1)
-    optical_line = OpticalLine(root)
+    optical_line = LineGUI(root)
     root.mainloop()
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ import numpy as np
 
 # Import the GUI component prototypes and init functions
 from GUI_prototypes import *
+from GUI_lineslist import *
 
 def generate_plot_dataA(x, ui_elements):
     amplitude = ui_elements["amplitude"]["val"].get()
@@ -42,7 +43,7 @@ class App:
         button_frame.pack(pady=5)
 
         # Add buttons to add and remove parameter lines
-        self.add_button = ttk.Button(button_frame, text="Add Parameter", command=self.add_parameter)
+        self.add_button = ttk.Button(button_frame, text="Add Optical Line", command=self.add_optical_line)
         self.add_button.pack(side=tk.LEFT, padx=5)
         self.update_button = ttk.Button(button_frame, text="Update", command=self.update_plot)
         self.update_button.pack(side=tk.LEFT, padx=5)
@@ -57,6 +58,8 @@ class App:
         
         self.paramcanvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
+
+        self.lineslist = LineGUI(self, self.parameters_frame, id = 0)
 
         # List to hold parameter entries
         self.parameters = []
@@ -87,25 +90,12 @@ class App:
     def test_func(self, param_frame):
         print("Test function called")
 
-    def add_parameter(self, prototype = 0):
-        """
-        Add a new parameter to GUI with default ui_elements
-        """
-        print("\nAdding parameter\n")
-        param_frame = ttk.LabelFrame(self.parameters_frame, text="Parameter Set", relief=tk.RIDGE)
-        param_frame.pack(pady=5, fill=tk.X)
+    def add_optical_line(self):
+        
 
-        # Initialize for default element, for now genplotA
-        if prototype == 0:
-            prototype = copy_prototype(GUI_PROTOTYPES["sine_wave"])
-        ui_elements = prototype
-        # Add the function dropdown and remove button in the first row
-        init_element(param_frame, ui_elements)
-        ui_elements["shared"]["function"]["combobox_func"] = self.update_parameters
-        ui_elements["shared"]["remove"]["func"] = self.remove_parameter
+        pass
 
-        self.parameters.append((param_frame, ui_elements))
-
+    def add_plot():
         # Add a new line to the plot
         print(ui_elements["shared"]["function"]["val"].get())
         plot_function = self.get_selected_function(ui_elements["shared"]["function"]["val"].get())

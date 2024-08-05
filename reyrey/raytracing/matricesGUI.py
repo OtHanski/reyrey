@@ -1,7 +1,7 @@
 from numpy import inf,array
 from math import radians, cos, sin
 
-def free(l = 0):
+def free(params):
     """Free space matrix, l - optical path [meters] = d*n, n-reflactive index, d-real distance"""
     return array([[1,l],
                   [0,1]])

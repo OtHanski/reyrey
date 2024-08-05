@@ -2,8 +2,10 @@ from copy import deepcopy
 import tkinter as tk
 from tkinter import ttk
 
-from raytracing.matrices import matrixdicts, ringCavity, linCavity
+from raytracing.matrices import matrixdicts, ringCavity, linCavity, GUI_matrix
 import raytracing.matrixcalc as rey
+
+debug = True
 
 class LineParameter:
     """tkinter widget for a single line parameter"""
@@ -31,28 +33,30 @@ class LineParameter:
         self.remove_button = ttk.Button(self.frame, text="Remove", command=self.remove).grid(row=0, column=1, padx=5)
 
         self.fields = {}
+        self.horverchecks = {}
         self.init_fields()
         
      
     def init_fields(self):
         i = 0
         for param in matrixdicts[self.get_function()]["params"]:
-            self.fields[f"label{i}"] = ttk.Label(self.frame, text=param)
-            self.fields[f"label{i}"].grid(row=i+1, column=0, padx=5)
-            self.fields[f"val{i}"] = tk.DoubleVar(value=0)
-            self.fields[f"elem{i}"] = ttk.Entry(self.frame, textvariable=self.fields[f"val{i}"])
-            self.fields[f"elem{i}"].grid(row=i+1, column=1, padx=5)
+            self.fields[i] = {}
+            self.fields[i]["label"] = ttk.Label(self.frame, text=param)
+            self.fields[i]["label"].grid(row=i+1, column=0, padx=5)
+            self.fields[i]["val"] = tk.DoubleVar(value=0)
+            self.fields[i]["elem"] = ttk.Entry(self.frame, textvariable=self.fields[i]["val"])
+            self.fields[i]["elem"].grid(row=i+1, column=1, padx=5)
             i += 1
         
         horver = matrixdicts[self.get_function()]["horver"]
-        self.fields["hor_check"] = ttk.Checkbutton(self.frame, text="Horizontal", variable=self.hor)
-        self.fields["hor_check"].grid(row=i+1, column=0, padx=5)
-        self.fields["ver_check"] = ttk.Checkbutton(self.frame, text="Vertical", variable=self.ver)
-        self.fields["ver_check"].grid(row=i+1, column=1, padx=5)
+        self.horverchecks["hor_check"] = ttk.Checkbutton(self.frame, text="Horizontal", variable=self.hor)
+        self.horverchecks["hor_check"].grid(row=i+1, column=0, padx=5)
+        self.horverchecks["ver_check"] = ttk.Checkbutton(self.frame, text="Vertical", variable=self.ver)
+        self.horverchecks["ver_check"].grid(row=i+1, column=1, padx=5)
         # Remove the hor and ver checkbuttons if the component doesn't support them
         if not horver:
-            self.fields["hor_check"].destroy()
-            self.fields["ver_check"].destroy()
+            self.horverchecks["hor_check"].destroy()
+            self.horverchecks["ver_check"].destroy()
     
     def remove_fields(self):
         # Wipe old UI elements to replace with new
@@ -76,14 +80,36 @@ class LineParameter:
     def get_function(self):
         return self.component.get()
     
-    def get_ABCD(self):
+    def calc_ABCD(self):
         self.func = matrixdicts[self.get_function()]["func"]
-        print(self.func)
-        matrixparams = {key: self.fields[f"val{i}"].get() for i, key in enumerate(matrixdicts[self.get_function()]["params"])}
-        matrixparams["func"] = self.func
-        ABCD = matrixparams#matrixdicts[self.get_function()]["func"](**{key: self.fields[f"val{i}"].get() for i, key in enumerate(matrixdicts[self.get_function()]["params"])})
-        print(ABCD)
-        return ABCD
+
+        matrixparams = {}
+        matrixparams["func"] = self.component.get()
+        for key in self.fields:
+            param = self.fields[key]["label"]["text"]
+            matrixparams[param] = self.fields[key]["val"].get()
+
+        try:
+            if self.hor.get():
+                self.ABCDhor = GUI_matrix(matrixparams)
+            else:
+                # If the component doesn't support horizontal, set ABCDhor to identity matrix
+                self.ABCDhor = GUI_matrix({"func": "identity"})
+            if self.ver.get():
+                self.ABCDver = GUI_matrix(matrixparams)
+            else:
+                # If the component doesn't support vertical, set ABCDver to identity matrix
+                self.ABCDver = GUI_matrix({"func": "identity"})
+    
+        except Exception as e:
+            print("Error in calc_ABCD:",e)
+            self.ABCDhor = None
+            self.ABCDver = None
+
+        if debug:
+            print(f"Matrices in component {self.id}:\nABCDhor: {self.ABCDhor}\nABCDver: {self.ABCDver}")
+
+        return (self.ABCDhor, self.ABCDver)
 
 
 class OpticalLine:
@@ -96,6 +122,11 @@ class OpticalLine:
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
         self.frame.rowconfigure(1, weight=1)
+
+        if hasattr(parent, "linesamples"):
+            self.samples = parent.linesamples
+        else: 
+            self.samples = tk.IntVar(value=10000)
 
 
         ### BUTTON FRAME ###
@@ -137,19 +168,24 @@ class OpticalLine:
         self.inputframe.rowconfigure(0, weight=1)
 
         # (Z = 0, ZR = 0, lam = 0, W = 0, n = 1)
-        self.input = {"Z": tk.DoubleVar(value=0), # Distance from waist
-                      "ZR": tk.DoubleVar(value=0), # Rayleigh length
+        self.input = {"Zhor": tk.DoubleVar(value=0), # Distance from waist
+                      "Zver": tk.DoubleVar(value=0), # Distance from waist
+                      "ZRhor": tk.DoubleVar(value=0), # Rayleigh length
+                      "ZRver": tk.DoubleVar(value=0), # Rayleigh length
+                      "Whor": tk.DoubleVar(value=1E-3), # Beam waist
+                      "Wver": tk.DoubleVar(value=1E-3), # Beam waist
                       "lam": tk.DoubleVar(value=972E-9), # Wavelength
-                      "W": tk.DoubleVar(value=1E-3), # Beam waist
                       "n": tk.DoubleVar(value=1)} # Refractive index
         self.input_widgets = {}
         i = 0
         for key in self.input:
             self.input_widgets[key] = ttk.Label(self.inputframe, text=key)
-            self.input_widgets[key].grid(row=i, column=0, padx=5)
+            self.input_widgets[key].grid(row=int(i/2), column=2*(i%2), padx=5)
             self.input_widgets[f"{key}_entry"] = ttk.Entry(self.inputframe, textvariable=self.input[key])
-            self.input_widgets[f"{key}_entry"].grid(row=i, column=1, padx=5)
+            self.input_widgets[f"{key}_entry"].grid(row=int(i/2), column=2*(i%2)+1, padx=5)
             i += 1
+
+        ### END INPUT BEAM FRAME ###
 
         ### COMPONENT FRAME ###
         self.componentframe = ttk.LabelFrame(self.frame, text="Optical Line", relief=tk.RIDGE)
@@ -182,12 +218,30 @@ class OpticalLine:
             self.componentframe.grid()
 
     def calculate_beamshape(self):
-        pass
+        # Calculate the beam shape at the end of the optical line
+        self.horline = rey.BeamTrace(self.matrices_hor, 
+                                     rey.calcq(Z = self.input["Zhor"].get(), lam = self.input["lam"].get(), W = self.input["Whor"].get(), n = self.input["n"].get()),
+                                     n_points = self.samples.get(), 
+                                     lda = self.input["lam"].get())
+        self.verline = rey.BeamTrace(self.matrices_ver, 
+                                     rey.calcq(Z = self.input["Zver"].get(), lam = self.input["lam"].get(), W = self.input["Wver"].get(), n = self.input["n"].get()),
+                                     n_points = self.samples.get(), 
+                                     lda = self.input["lam"].get())
+        self.horline.constructRey()
+        self.verline.constructRey()
+        self.zrhor = rey.z_r(self.whor, self.input["lam"].get())
+        self.zrver = rey.z_r(self.wver, self.input["lam"].get())
+        self.calculate_beamshape
 
     def replot(self):
-        self.matrices = []
+        self.matrices_hor = []
+        self.matrices_ver = []
         for param in self.parameters:
-            self.matrices.append(param.get_ABCD())
+            hor, ver = param.calc_ABCD()
+            self.matrices_hor.append(hor)
+            self.matrices_ver.append(ver)
+        self.calculate_beamshape()
+        self.plot_beamshape()
 
 def test():
     root = tk.Tk()

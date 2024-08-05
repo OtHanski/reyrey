@@ -11,6 +11,17 @@ def GUI_matrix(params: dict):
             return thinlens(f = params["f"])
         case "curvedmirror":
             return curvedmirrorhor(R = params["R"], theta = params["θ"])
+        case "thicklens":
+            return thicklens()
+        case "flatrefraction":
+            return flatrefraction(n1 = params["n1"], n2 = params["n2"])
+        case _:
+            return identity()
+
+def identity():
+    """Identity matrix"""
+    return array([[1,0],
+                  [0,1]])
 
 def free(l = 0):
     """Free space matrix, l - optical path [meters] = d*n, n-reflactive index, d-real distance"""

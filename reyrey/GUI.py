@@ -44,9 +44,17 @@ class App:
 
         # Add buttons to add and remove parameter lines
         self.add_button = ttk.Button(button_frame, text="Add Optical Line", command=self.add_optical_line)
-        self.add_button.pack(side=tk.LEFT, padx=5)
+        self.add_button.grid(row=0, column=0, padx=5)
         self.update_button = ttk.Button(button_frame, text="Update", command=self.update_plot)
-        self.update_button.pack(side=tk.LEFT, padx=5)
+        self.update_button.grid(row=0, column=1, padx=5)
+
+        # Add ver and hor plot tickboxes
+        self.ver = tk.IntVar()
+        self.ver_check = ttk.Checkbutton(button_frame, text="Vertical", variable=self.ver)
+        self.ver_check.grid(row = 1, column = 0, padx=5)
+        self.hor = tk.IntVar()
+        self.hor_check = ttk.Checkbutton(button_frame, text="Horizontal", variable=self.hor)
+        self.hor_check.grid(row = 1, column = 1, padx=5)
 
         # Scrollable canvas for parameters
         self.paramcanvas = tk.Canvas(self.sidebar, borderwidth=0)

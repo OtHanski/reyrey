@@ -60,12 +60,19 @@ class LineParameter:
     
     def remove_fields(self):
         # Wipe old UI elements to replace with new
-        for key in list(self.fields):
-            print(type(self.fields[key]))
-            if type(self.fields[key]) in [ttk.Label, ttk.Entry, ttk.Checkbutton]:
+        print("Removing fields")
+        for i in list(self.fields):
+            for key in list(self.fields[i]):
+                if type(self.fields[i][key]) in [ttk.Label, ttk.Entry, ttk.Checkbutton]:
+                    print(f"Destroying {key}")
+                    self.fields[i][key].destroy()
+                del self.fields[i][key]
+        print("Removing horverchecks")
+        for key in list(self.horverchecks):
+            if type(self.horverchecks[key]) in [ttk.Checkbutton]:
                 print(f"Destroying {key}")
-                self.fields[key].destroy()
-            del self.fields[key]
+                self.horverchecks[key].destroy()
+            del self.horverchecks[key]
     
     def update_fields(self):
         print("Updating fields")
@@ -114,10 +121,10 @@ class LineParameter:
 
 class OpticalLine:
     """tkinter widget for a single optical line"""
-    def __init__(self, parent, id = 0, location = (0,0), updateFlag = None):
+    def __init__(self, parent, parentframe,  id = 0, location = (0,0), updateFlag = None):
         self.parent = parent
         self.id = id
-        self.frame = ttk.LabelFrame(parent, text=f"Controls")#, relief=tk.RIDGE)
+        self.frame = ttk.LabelFrame(parentframe, text = "Controls")#, relief=tk.RIDGE)
         self.frame.grid(row=location[0], column=location[1], pady=5, sticky="news")
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
@@ -131,6 +138,8 @@ class OpticalLine:
         # Update flag should be a tk.IntVar toggle to tag the plot for update.
         if updateFlag:
             self.updateFlag = updateFlag
+        else:
+            self.updateFlag = tk.IntVar(value=0)
 
 
         ### BUTTON FRAME ###
@@ -240,6 +249,8 @@ class OpticalLine:
                                         n_points = self.samples.get(), 
                                         lda = self.input["lam"].get())
             self.verline.constructRey()
+        if debug:
+            print("Beam shape calculated")
         #self.zrhor = rey.z_r(self.whor, self.input["lam"].get())
         #self.zrver = rey.z_r(self.wver, self.input["lam"].get())
 
@@ -255,7 +266,8 @@ class OpticalLine:
             print(self.matrices_ver)
 
         self.calculate_beamshape()
-        self.updateFlag.set(1)
+        if self.updateFlag.get() == 0:
+            self.updateFlag.set(1)
 
 def test():
     root = tk.Tk()

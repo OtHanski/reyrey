@@ -89,6 +89,7 @@ class BeamTrace:
         self.q_in = q_in # initial q-parameter of the beam
         self.zr = 0 # Save rayleigh length
         self.lda = lda
+        self.focii = [] # Save focii of the beamline
         
     def constructRey(self,lda = 972E-9):
         """Function that construct waists vs x posision"""
@@ -102,8 +103,6 @@ class BeamTrace:
 
         if debug:
             print(f"matrices: {self.matrexes}")
-            
-
 
         for M in self.matrexes:
             if debug:
@@ -143,4 +142,7 @@ class BeamTrace:
             print(f"Error in zr calculation: {e}")
             print(f"ws: {self.ws}\nlda: {lda}")
             self.zr = 0
+        for i in range(1,len(self.ws)-1):
+            if self.ws[i] < self.ws[i-1] and self.ws[i] < self.ws[i+1]:
+                self.focii.append((self.xs[i],self.ws[i]))
 

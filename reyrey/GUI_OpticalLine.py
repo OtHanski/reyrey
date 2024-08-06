@@ -114,7 +114,7 @@ class LineParameter:
 
 class OpticalLine:
     """tkinter widget for a single optical line"""
-    def __init__(self, parent, id = 0, location = (0,0)):
+    def __init__(self, parent, id = 0, location = (0,0), updateFlag = None):
         self.parent = parent
         self.id = id
         self.frame = ttk.LabelFrame(parent, text=f"Controls")#, relief=tk.RIDGE)
@@ -127,6 +127,10 @@ class OpticalLine:
             self.samples = parent.linesamples
         else: 
             self.samples = tk.IntVar(value=10000)
+        
+        # Update flag should be a tk.IntVar toggle to tag the plot for update.
+        if updateFlag:
+            self.updateFlag = updateFlag
 
 
         ### BUTTON FRAME ###
@@ -219,19 +223,25 @@ class OpticalLine:
 
     def calculate_beamshape(self):
         # Calculate the beam shape at the end of the optical line
-        self.horline = rey.BeamTrace(self.matrices_hor, 
+        if debug:
+            print(f"Calculating beam shape with {self.samples.get()} samples")
+        
+        if self.hor.get():
+            if debug: print("Constructing Horizontal")
+            self.horline = rey.BeamTrace(self.matrices_hor, 
                                      rey.calcq(Z = self.input["Zhor"].get(), lam = self.input["lam"].get(), W = self.input["Whor"].get(), n = self.input["n"].get()),
                                      n_points = self.samples.get(), 
                                      lda = self.input["lam"].get())
-        self.verline = rey.BeamTrace(self.matrices_ver, 
-                                     rey.calcq(Z = self.input["Zver"].get(), lam = self.input["lam"].get(), W = self.input["Wver"].get(), n = self.input["n"].get()),
-                                     n_points = self.samples.get(), 
-                                     lda = self.input["lam"].get())
-        self.horline.constructRey()
-        self.verline.constructRey()
-        self.zrhor = rey.z_r(self.whor, self.input["lam"].get())
-        self.zrver = rey.z_r(self.wver, self.input["lam"].get())
-        self.calculate_beamshape
+            self.horline.constructRey()
+        if self.ver.get():
+            if debug: print("Constructing Vertical")
+            self.verline = rey.BeamTrace(self.matrices_ver, 
+                                        rey.calcq(Z = self.input["Zver"].get(), lam = self.input["lam"].get(), W = self.input["Wver"].get(), n = self.input["n"].get()),
+                                        n_points = self.samples.get(), 
+                                        lda = self.input["lam"].get())
+            self.verline.constructRey()
+        #self.zrhor = rey.z_r(self.whor, self.input["lam"].get())
+        #self.zrver = rey.z_r(self.wver, self.input["lam"].get())
 
     def replot(self):
         self.matrices_hor = []
@@ -240,8 +250,12 @@ class OpticalLine:
             hor, ver = param.calc_ABCD()
             self.matrices_hor.append(hor)
             self.matrices_ver.append(ver)
+        if debug:
+            print(self.matrices_hor)
+            print(self.matrices_ver)
+
         self.calculate_beamshape()
-        self.plot_beamshape()
+        self.updateFlag.set(1)
 
 def test():
     root = tk.Tk()

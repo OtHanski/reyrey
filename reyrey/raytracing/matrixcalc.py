@@ -3,6 +3,8 @@ from math import *
 from scipy.optimize import root
 import raytracing.matrices as ma
 
+debug = True
+
 def parseOSYS():
     return 1
 
@@ -97,14 +99,25 @@ class BeamTrace:
         print(f"q_in: {q_in}")
         direction = 1 # direction of the beam (if mirror comes it changes the direction)
         self.matrexes.reverse()
+
+        if debug:
+            print(f"matrices: {self.matrexes}")
+            
+
+
         for M in self.matrexes:
+            if debug:
+                print(f"M: {M}")
+                print(f"q_in: {q_in}")
             
             if type(M) == str: # it is a label to save current beam parameter
+                    if debug: print("label")
                     self.qs_to_print.append((M,w_z(q_in,lda),q_in))
                     print(self.qs_to_print[-1])
                     continue
                     
             if M[0][1] != 0: # it is free space matrix 
+                if debug: print("free space")
                 xs = np.linspace(0,M[0][1],self.n_points)
                 ws = w_z(xs+np.real(q_in),lda=lda,zr=np.imag(q_in)) # calculates waists
                 #print(ws)
@@ -120,8 +133,14 @@ class BeamTrace:
                 self.ws.extend(ws)
                 
             elif M[0][1] == 0 and M[1][0] == 0: # ones matrix means a mirror - change of the direction
+                if debug: print("mirror")
                 direction *= 1
                 continue
             q_in = transformq(M,q_in) #calculate new q-parameter for the next matrix
-        self.zr = z_r(self.ws[0], lda)
+        try:
+            self.zr = z_r(self.ws[0], lda)
+        except Exception as e:
+            print(f"Error in zr calculation: {e}")
+            print(f"ws: {self.ws}\nlda: {lda}")
+            self.zr = 0
 

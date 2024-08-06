@@ -173,7 +173,8 @@ class LineParameter:
 
 class LineGUI:
     """tkinter widget for creating, editing and destroying optical lines"""
-    def __init__(self, parent, parentframe, id = 0, location = (0,0)):
+    def __init__(self, parent, parentframe, id = 0, location = (0,0), updateFlag: tk.IntVar = None):
+        """updateFlag is a flag that can be set to trigger an update"""
         self.parent = parent
         self.id = id
         self.frame = ttk.LabelFrame(parentframe, text=f"Optical Beams")
@@ -182,6 +183,8 @@ class LineGUI:
         self.frame.rowconfigure(0, weight=1)
         self.frame.rowconfigure(1, weight=1)
 
+        if updateFlag:
+            self.updateFlag = updateFlag
 
         ### BUTTON FRAME ###
         self.button_frame = ttk.Frame(self.frame)
@@ -242,7 +245,7 @@ class LineGUI:
 
     def add_parameter(self):
         id = len(self.parameters)
-        new_parameter = LineParameter(self, self.componentframe, id)
+        new_parameter = LineParameter(self, self.componentframe, id, updateFlag = self.updateFlag)
         new_parameter
         self.parameters.append(new_parameter)
         self.componentframe.rowconfigure(id, weight=1)

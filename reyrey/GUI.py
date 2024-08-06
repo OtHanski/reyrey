@@ -59,7 +59,10 @@ class App:
         self.paramcanvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
 
-        self.lineslist = LineGUI(self, self.parameters_frame, id = 0)
+        self.updateFlag = tk.IntVar(value=0)
+        # Bind the updateFlag to the updateFlag_test function
+        self.updateFlag.trace_add("write", self.updateFlag_test)
+        self.lineslist = LineGUI(self, self.parameters_frame, id = 0, updateFlag = self.updateFlag)
 
         # List to hold parameter entries
         self.parameters = []
@@ -147,6 +150,11 @@ class App:
         self.ax.relim()
         self.ax.autoscale_view()
         self.canvas.draw()
+    
+    def updateFlag_test(self):
+        print(f"Flag updated: {self.updateFlag.get()}")
+        self.updateFlag.set(0)
+        print(f"Flag reset: {self.updateFlag.get()}")
 
     def get_selected_function(self, function_name):
         print("Function name: ", function_name)

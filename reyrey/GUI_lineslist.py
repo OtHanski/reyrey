@@ -82,13 +82,16 @@ class paramtan:
 
 opticalitems = {"sine_wave": paramsine, "cosine_wave": paramcosine, "tangent_wave": paramtan, "Optical Line": OpticalLine}
 
-class LineParameter:
+class LineItem:
     """tkinter widget for a single line parameter"""
-    def __init__(self, parent, parentframe: ttk.Frame, id = 0, opticalitems = opticalitems):
+    def __init__(self, parent, parentframe: ttk.Frame, id = 0, location = (0,0), updateFlag = None, opticalitems = opticalitems):
+#   def __init__(self, parent, parentframe,  id = 0, location = (0,0), updateFlag = None):
         self.parent = parent
         self.id = id
         self.hor = tk.IntVar(value=1)
         self.ver = tk.IntVar(value=1)
+
+        self.updateFlag = updateFlag
 
         self.frame = ttk.LabelFrame(parentframe, text=f"Component {id}", relief=tk.RIDGE)
         self.frame.grid(row=id, column=0, pady=5, sticky="news")
@@ -115,6 +118,9 @@ class LineParameter:
 
         self.remove_button = ttk.Button(self.buttonframe, text="Remove", command=self.remove).grid(row=0, column=1, padx=5)
 
+        self.itemframe = ttk.Frame(self.frame)
+        self.itemframe.grid(row=1, column=0, pady=5, sticky="news")
+
         self.fields = {}
         self.init_fields()
         
@@ -130,7 +136,7 @@ class LineParameter:
         self.fieldframe.rowconfigure(2, weight=1)
 
         i = len(self.fields)
-        self.fields[i] = self.opticalitems[self.get_function()](self.fieldframe)
+        self.fields[i] = self.opticalitems[self.get_function()](self.parent, self.fieldframe, id = i, location = (0,0), updateFlag = None)
     
     def remove_fields(self):
         # Wipe old UI elements to replace with new
@@ -183,8 +189,7 @@ class LineGUI:
         self.frame.rowconfigure(0, weight=1)
         self.frame.rowconfigure(1, weight=1)
 
-        if updateFlag:
-            self.updateFlag = updateFlag
+        self.updateFlag = updateFlag
 
         ### BUTTON FRAME ###
         self.button_frame = ttk.Frame(self.frame)
@@ -196,11 +201,11 @@ class LineGUI:
         self.button_frame.rowconfigure(0, weight=1)
         self.button_frame.rowconfigure(1, weight=1)
 
-        self.name = tk.StringVar(value = "New Optical Line")
-        self.namefield = ttk.Entry(self.button_frame, textvariable=self.name)
-        self.namefield.grid(row=0, column=0, padx=5)
+        #self.name = tk.StringVar(value = "New Optical Line")
+        #self.namefield = ttk.Entry(self.button_frame, textvariable=self.name)
+        #self.namefield.grid(row=0, column=0, padx=5)
 
-        self.add_button = ttk.Button(self.button_frame, text="Add Parameter", command=self.add_parameter)
+        self.add_button = ttk.Button(self.button_frame, text="Add Line", command=self.add_parameter)
         self.add_button.grid(row=0, column=1, padx=5)
 
         self.showhide_button = ttk.Button(self.button_frame, text="Show/Hide", command=self.showhide)
@@ -245,7 +250,8 @@ class LineGUI:
 
     def add_parameter(self):
         id = len(self.parameters)
-        new_parameter = LineParameter(self, self.componentframe, id, updateFlag = self.updateFlag)
+        location = (id, 0)
+        new_parameter = LineItem(self, self.componentframe, id, location, updateFlag = self.updateFlag)
         new_parameter
         self.parameters.append(new_parameter)
         self.componentframe.rowconfigure(id, weight=1)
@@ -278,7 +284,7 @@ def test():
     root.title("Optical Line Test")
     tk.Grid.rowconfigure(root, 0, weight=1)
     tk.Grid.columnconfigure(root, 0, weight=1)
-    optical_line = LineGUI(root)
+    optical_line = LineGUI(root, root, location=(0,0))
     root.mainloop()
 
 if __name__ == "__main__":

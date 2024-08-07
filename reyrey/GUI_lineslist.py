@@ -6,6 +6,7 @@ from raytracing.matrices import matrixdicts, ringCavity, linCavity
 from GUI_OpticalLine import OpticalLine
 import raytracing.matrixcalc as rey
 
+debug = True
 
 class paramsine:
     # Prototype for sine wave
@@ -120,32 +121,25 @@ class LineItem:
 
         self.itemframe = ttk.Frame(self.frame)
         self.itemframe.grid(row=1, column=0, pady=5, sticky="news")
+        self.itemframe.columnconfigure(0, weight=1)
+        self.itemframe.rowconfigure(0, weight=1)
+
+        #self.item = self.opticalitems[self.get_function()](self.parent, self.fieldframe, id = 0, location = (0,0), updateFlag = None)
 
         self.fields = {}
         self.init_fields()
         
      
     def init_fields(self):
-        self.fieldframe = ttk.Frame(self.frame)
-        self.fieldframe.grid(row=1, column=0, pady=5, sticky="news")
-        self.fieldframe.columnconfigure(0, weight=1)
-        self.fieldframe.columnconfigure(1, weight=1)
-        self.fieldframe.columnconfigure(2, weight=1)
-        self.fieldframe.rowconfigure(0, weight=1)
-        self.fieldframe.rowconfigure(1, weight=1)
-        self.fieldframe.rowconfigure(2, weight=1)
+        self.item = self.opticalitems[self.get_function()](self.parent, self.itemframe, id = 0, location = (0,0), updateFlag = None)
 
-        i = len(self.fields)
-        self.fields[i] = self.opticalitems[self.get_function()](self.parent, self.fieldframe, id = i, location = (0,0), updateFlag = None)
-    
+        #i = len(self.fields)
+        #self.fields[i] = self.opticalitems[self.get_function()](self.parent, self.fieldframe, id = i, location = (0,0), updateFlag = None)
+
     def remove_fields(self):
         # Wipe old UI elements to replace with new
-        for key in list(self.fields):
-            print(type(self.fields[key]))
-            if type(self.fields[key]) in [ttk.Label, ttk.Entry, ttk.Checkbutton]:
-                print(f"Destroying {key}")
-                self.fields[key].destroy()
-            del self.fields[key]
+        self.item.frame.destroy()
+        del self.item
     
     def update_fields(self):
         print("Updating fields")
@@ -175,6 +169,9 @@ class LineItem:
         ABCD = matrixparams#matrixdicts[self.get_function()]["func"](**{key: self.fields[f"val{i}"].get() for i, key in enumerate(matrixdicts[self.get_function()]["params"])})
         print(ABCD)
         return ABCD
+    
+    def replot(self):
+        return self.item.replot()
 
 
 class LineGUI:
@@ -212,10 +209,10 @@ class LineGUI:
         self.showhide_button.grid(row=0, column=2, padx=5)
         
         # Add ver and hor plot tickboxes
-        self.ver = tk.IntVar()
+        self.ver = tk.IntVar(value = 1)
         self.ver_check = ttk.Checkbutton(self.button_frame, text="Vertical", variable=self.ver)
         self.ver_check.grid(row=1, column=0, padx=5)
-        self.hor = tk.IntVar()
+        self.hor = tk.IntVar(value = 1)
         self.hor_check = ttk.Checkbutton(self.button_frame, text="Horizontal", variable=self.hor)
         self.hor_check.grid(row=1, column=1, padx=5)
         # Replot button
@@ -273,18 +270,23 @@ class LineGUI:
     def calculate_beamshape(self):
         pass
 
-    def get_lines(self):
+    def get_lines(self, n = 1000):
         xydat = {}
         i = 0
         for line in self.opticalLines:
-            xydat[i] = line.get_plot()
+            xydat[i] = line.replot()
             i += 1
         return xydat
 
-    def replot(self):
-        self.matrices = []
-        for param in self.parameters:
-            self.matrices.append(param.get_ABCD())
+    def replot(self, n = 1000):
+        plotdata = {}
+        i = 0
+        for optLine in self.opticalLines:
+            plotdata[i] = optLine.replot()
+            i+=1
+        if debug: print(f"Replot done in LineGUI, keys: {plotdata.keys()}")
+        if debug: print(f"Replot done in LineGUI, values: {plotdata[0].keys()}")
+        return plotdata
 
 def test():
     root = tk.Tk()

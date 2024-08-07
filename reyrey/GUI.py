@@ -98,62 +98,24 @@ class App:
         self.sample_entry = ttk.Entry(sample_frame, textvariable=self.sample_var)
         self.sample_entry.pack(side=tk.LEFT, padx=5)
 
-    def test_func(self, param_frame):
-        print("Test function called")
-
-    def add_optical_line(self):
-        
-
-        pass
-
-    def add_plot():
-        # Add a new line to the plot
-        print(ui_elements["shared"]["function"]["val"].get())
-        plot_function = self.get_selected_function(ui_elements["shared"]["function"]["val"].get())
-        print(plot_function)
-        try:
-            y = plot_function(self.x, ui_elements)
-        except:
-            print("Error in plot function")
-            y = np.zeros_like(self.x)
-        line, = self.ax.plot(self.x, y)
-        self.lines.append(line)
-
-        self.update_plot()
-        
-        return ui_elements
-
-    def update_parameters(self, param_frame, ui_elements):
-        print("Updating parameters")
-        # Get the index of the function_val in the list of functions
-        function_val = ui_elements["shared"]["function"]["val"].get()
-        val_index = ui_elements["shared"]["function"]["elem"].current()
-        new_proto = copy_prototype(GUI_PROTOTYPES[GUI_PROTOTYPE_MAP[function_val]])
-        new_proto["shared"]["function"]["default"] = val_index
-        self.remove_parameter(param_frame)
-        self.add_parameter(new_proto)
-
-    def remove_parameter(self, param_frame):
-        print("Removing parameter")
-        for i, (frame, ui_elements) in enumerate(self.parameters):
-            if frame == param_frame:
-                # Remove the corresponding line from the plot
-                line = self.lines.pop(i)
-                line.remove()
-                self.parameters.pop(i)
-                frame.destroy()
-                break
-        print(self.lines)
-        self.update_plot()
-
     def update_plot(self):
+        self.lines = []
         num_samples = self.sample_var.get()
+        xydat = self.lineslist.get_lines(num_samples)
+        for data in xydat:
+            # Plot vertical and/or horizontal as provided
+            for horver in data:
+                line = self.ax.plot(data["x"], data["y"])
+                self.lines.append(line)
+        
+        """
         self.x = np.linspace(0, 2 * np.pi, num_samples)
         for line, (param_frame, ui_elements) in zip(self.lines, self.parameters):
             function_var = ui_elements["shared"]["function"]["val"]
             plot_function = self.get_selected_function(function_var.get())
             y = plot_function(self.x, ui_elements)
             line.set_ydata(y)
+        """
 
         self.ax.relim()
         self.ax.autoscale_view()
@@ -163,17 +125,6 @@ class App:
         print(f"Flag updated: {self.updateFlag.get()}")
         self.updateFlag.set(0)
         print(f"Flag reset: {self.updateFlag.get()}")
-
-    def get_selected_function(self, function_name):
-        print("Function name: ", function_name)
-        if function_name == 'generate_plot_dataA':
-            return generate_plot_dataA
-        if function_name == 'generate_plot_dataB':
-            return generate_plot_dataB
-        if function_name == 'Optical Line':
-            return Optical_Line
-        else:
-            return generate_plot_dataB
 
     def on_frame_configure(self, event):
         self.paramcanvas.configure(scrollregion=self.paramcanvas.bbox("all"))

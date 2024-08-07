@@ -9,10 +9,10 @@ import raytracing.matrixcalc as rey
 
 class paramsine:
     # Prototype for sine wave
-    def __init__(self, parent):
+    def __init__(self, parent, parentframe,  id = 0, location = (0,0), updateFlag = None):
         self. parent = parent
         # Create simple frame with sample tkinter components
-        self.frame = ttk.LabelFrame(parent, text="Sine Wave", relief=tk.RIDGE)
+        self.frame = ttk.LabelFrame(parentframe, text="Sine Wave", relief=tk.RIDGE)
         self.frame.grid(row=0, column=0, pady=5, sticky="news")
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
@@ -33,10 +33,10 @@ class paramsine:
 
 class paramcosine:
     # Prototype for cosine wave
-    def __init__(self, parent):
+    def __init__(self, parent, parentframe,  id = 0, location = (0,0), updateFlag = None):
         self. parent = parent
         # Create simple frame with sample tkinter components
-        self.frame = ttk.LabelFrame(parent, text="Cosine Wave", relief=tk.RIDGE)
+        self.frame = ttk.LabelFrame(parentframe, text="Cosine Wave", relief=tk.RIDGE)
         self.frame.grid(row=0, column=0, pady=5, sticky="news")
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
@@ -57,10 +57,10 @@ class paramcosine:
     
 class paramtan:
     # Prototype for tangent wave
-    def __init__(self, parent):
+    def __init__(self, parent, parentframe,  id = 0, location = (0,0), updateFlag = None):
         self. parent = parent
         # Create simple frame with sample tkinter components
-        self.frame = ttk.LabelFrame(parent, text="Tangent Wave", relief=tk.RIDGE)
+        self.frame = ttk.LabelFrame(parentframe, text="Tangent Wave", relief=tk.RIDGE)
         self.frame.grid(row=0, column=0, pady=5, sticky="news")
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
@@ -245,24 +245,23 @@ class LineGUI:
         self.componentframe.grid(row=2, column=0, pady=5, sticky="news")
         self.componentframe.columnconfigure(0, weight=1)
 
-        self.parameters = []
+        self.opticalLines = []
         ### END COMPONENT FRAME ###
 
     def add_parameter(self):
-        id = len(self.parameters)
+        id = len(self.opticalLines)
         location = (id, 0)
-        new_parameter = LineItem(self, self.componentframe, id, location, updateFlag = self.updateFlag)
-        new_parameter
-        self.parameters.append(new_parameter)
+        new_opticalLine = LineItem(self, self.componentframe, id, location, updateFlag = self.updateFlag)
+        self.opticalLines.append(new_opticalLine)
         self.componentframe.rowconfigure(id, weight=1)
     
     def destroyLineParam(self, id):
-        param = self.parameters.pop(id)
-        param.frame.destroy()
-        del param
+        line = self.opticalLines.pop(id)
+        line.frame.destroy()
+        del line
         # Renumber and reposition the parameters
-        for i, param in enumerate(self.parameters):
-            param.updateID(id = i)
+        for i, optLine in enumerate(self.opticalLines):
+            optLine.updateID(id = i)
     
     def showhide(self):
         # Show or hide the optical line
@@ -273,6 +272,14 @@ class LineGUI:
 
     def calculate_beamshape(self):
         pass
+
+    def get_lines(self):
+        xydat = {}
+        i = 0
+        for line in self.opticalLines:
+            xydat[i] = line.get_plot()
+            i += 1
+        return xydat
 
     def replot(self):
         self.matrices = []

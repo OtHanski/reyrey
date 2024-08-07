@@ -8,19 +8,6 @@ import numpy as np
 from GUI_prototypes import *
 from GUI_lineslist import *
 
-def generate_plot_dataA(x, ui_elements):
-    amplitude = ui_elements["amplitude"]["val"].get()
-    frequency = ui_elements["frequency"]["val"].get()
-    return amplitude * np.sin(frequency * x)
-
-def generate_plot_dataB(x, ui_elements):
-    amplitude = ui_elements["amplitude"]["val"].get()
-    frequency = ui_elements["frequency"]["val"].get()
-    phase = ui_elements["phase"]["val"].get()
-    return amplitude * np.cos(frequency * x + phase)
-
-def Optical_Line(x, ui_elements):
-    return x
 
 class App:
     def __init__(self, root):
@@ -98,14 +85,23 @@ class App:
         self.sample_entry = ttk.Entry(sample_frame, textvariable=self.sample_var)
         self.sample_entry.pack(side=tk.LEFT, padx=5)
 
+    def add_optical_line(self):
+        pass    
+
     def update_plot(self):
+        # Clear the current plot
+        for line in self.ax.get_lines():
+            line.remove()
+        # Create an object to hold the lines
         self.lines = []
         num_samples = self.sample_var.get()
-        xydat = self.lineslist.get_lines(num_samples)
-        for data in xydat:
+        xydat = self.lineslist.replot(num_samples)
+        print(f"xydat keys: {xydat.keys()}")
+        print(f"xydat values: {xydat[0]}")
+        for optline in xydat:
             # Plot vertical and/or horizontal as provided
-            for horver in data:
-                line = self.ax.plot(data["x"], data["y"])
+            for horver in xydat[optline]:
+                line = self.ax.plot(xydat[optline][horver]["x"], xydat[optline][horver]["w"])
                 self.lines.append(line)
         
         """
@@ -116,7 +112,6 @@ class App:
             y = plot_function(self.x, ui_elements)
             line.set_ydata(y)
         """
-
         self.ax.relim()
         self.ax.autoscale_view()
         self.canvas.draw()

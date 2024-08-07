@@ -43,7 +43,7 @@ class LineParameter:
             self.fields[i] = {}
             self.fields[i]["label"] = ttk.Label(self.frame, text=param)
             self.fields[i]["label"].grid(row=i+1, column=0, padx=5)
-            self.fields[i]["val"] = tk.DoubleVar(value=0)
+            self.fields[i]["val"] = tk.DoubleVar(value=1)
             self.fields[i]["elem"] = ttk.Entry(self.frame, textvariable=self.fields[i]["val"])
             self.fields[i]["elem"].grid(row=i+1, column=1, padx=5)
             i += 1
@@ -133,7 +133,7 @@ class OpticalLine:
         if hasattr(parent, "linesamples"):
             self.samples = parent.linesamples
         else: 
-            self.samples = tk.IntVar(value=10000)
+            self.samples = tk.IntVar(value=100)
         
         # Update flag should be a tk.IntVar toggle to tag the plot for update.
         if updateFlag:
@@ -163,10 +163,10 @@ class OpticalLine:
         self.showhide_button.grid(row=0, column=2, padx=5)
         
         # Add ver and hor plot tickboxes
-        self.ver = tk.IntVar()
+        self.ver = tk.IntVar(value = 1)
         self.ver_check = ttk.Checkbutton(self.button_frame, text="Vertical", variable=self.ver)
         self.ver_check.grid(row=1, column=0, padx=5)
-        self.hor = tk.IntVar()
+        self.hor = tk.IntVar(value = 1)
         self.hor_check = ttk.Checkbutton(self.button_frame, text="Horizontal", variable=self.hor)
         self.hor_check.grid(row=1, column=1, padx=5)
         # Replot button
@@ -265,9 +265,20 @@ class OpticalLine:
             print(self.matrices_hor)
             print(self.matrices_ver)
 
+        self.matrices_hor.reverse()
+        self.matrices_ver.reverse()
         self.calculate_beamshape()
-        if self.updateFlag.get() == 0:
-            self.updateFlag.set(1)
+        self.plotdata = {}
+        if self.hor.get():
+            self.plotdata["hor"] = {}
+            self.plotdata["hor"]["x"] = self.horline.xs
+            self.plotdata["hor"]["w"] = self.horline.ws
+        if self.ver.get():
+            self.plotdata["ver"] = {}
+            self.plotdata["ver"]["x"] = self.verline.xs
+            self.plotdata["ver"]["w"] = self.verline.ws
+        if debug: print(f"plotdata keys: {self.plotdata.keys()}")
+        return self.plotdata
 
 def test():
     root = tk.Tk()

@@ -81,7 +81,7 @@ class paramtan:
         self.frequency_entry.grid(row=1, column=1, padx=5)
 
 
-opticalitems = {"sine_wave": paramsine, "cosine_wave": paramcosine, "tangent_wave": paramtan, "Optical Line": OpticalLine}
+opticalitems = {"Optical Line": OpticalLine}
 
 class LineItem:
     """tkinter widget for a single line parameter"""
@@ -172,6 +172,24 @@ class LineItem:
     
     def replot(self):
         return self.item.replot()
+    
+    def savestate(self):
+        # Save current state in dict for loading
+        state = {}
+        state["function"] = self.get_function()
+        state["fields"] = {}
+        state["item"] = self.item.savestate()
+        for key in self.fields:
+            state["fields"][key] = self.fields[key].get()
+        return state
+    
+    def loadstate(self, state):
+        # Load state from dict
+        self.component.set(state["function"])
+        self.update_fields()
+        for key in state["fields"]:
+            self.fields[key].set(state["fields"][key])
+        self.item.loadstate(state["item"])
 
 
 class LineGUI:
@@ -287,6 +305,21 @@ class LineGUI:
         if debug: print(f"Replot done in LineGUI, keys: {plotdata.keys()}")
         if debug: print(f"Replot done in LineGUI, values: {plotdata[0].keys()}")
         return plotdata
+    
+    def savestate(self):
+        state = {}
+        state["input"] = {}
+        for key in self.input:
+            state["input"][key] = self.input[key].get()
+        state["opticalLines"] = [optLine.savestate() for optLine in self.opticalLines]
+        return state
+    
+    def loadstate(self, state):
+        for key in state["input"]:
+            self.input[key].set(state["input"][key])
+        for optLine in state["opticalLines"]:
+            self.add_parameter()
+            self.opticalLines[-1].loadstate(optLine)
 
 def test():
     root = tk.Tk()

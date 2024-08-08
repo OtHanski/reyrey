@@ -117,6 +117,28 @@ class LineParameter:
             print(f"Matrices in component {self.id}:\nABCDhor: {self.ABCDhor}\nABCDver: {self.ABCDver}")
 
         return (self.ABCDhor, self.ABCDver)
+    
+    def savestate(self):
+        state = {}
+        state["function"] = self.component.get()
+        state["hor"] = self.hor.get()
+        state["ver"] = self.ver.get()
+        state["fields"] = {}
+        for key in self.fields:
+            state["fields"][key] = self.fields[key]["val"].get()
+        return state
+    
+    def loadstate(self, state):
+        self.component.set(state["function"])
+        self.update_fields()
+        self.hor.set(state["hor"])
+        self.ver.set(state["ver"])
+        if debug: 
+            print(f"Loading state: {state}")
+            print(f"Fields: {self.fields}")
+        for key in self.fields:
+            self.fields[key]["val"].set(state["fields"][str(key)])
+        self.update_fields()
 
 
 class OpticalLine:
@@ -279,6 +301,31 @@ class OpticalLine:
             self.plotdata["ver"]["w"] = self.verline.ws
         if debug: print(f"plotdata keys: {self.plotdata.keys()}")
         return self.plotdata
+    
+    def savestate(self):
+        state = {}
+        state["name"] = self.name.get()
+        state["samples"] = self.samples.get()
+        state["hor"] = self.hor.get()
+        state["ver"] = self.ver.get()
+        state["input"] = {}
+        for key in self.input:
+            state["input"][key] = self.input[key].get()
+        state["parameters"] = []
+        for param in self.parameters:
+            state["parameters"].append(param.savestate())
+        return state
+    
+    def loadstate(self, state):
+        self.name.set(state["name"])
+        self.samples.set(state["samples"])
+        self.hor.set(state["hor"])
+        self.ver.set(state["ver"])
+        for key in self.input:
+            self.input[key].set(state["input"][key])
+        for param in state["parameters"]:
+            self.add_parameter()
+            self.parameters[-1].loadstate(param)
 
 def test():
     root = tk.Tk()

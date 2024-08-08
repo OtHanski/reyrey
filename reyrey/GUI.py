@@ -8,6 +8,9 @@ import numpy as np
 from GUI_prototypes import *
 from GUI_lineslist import *
 
+# Import filehandler
+import utils.FileHandler as fh
+
 
 class App:
     def __init__(self, root):
@@ -30,16 +33,18 @@ class App:
         button_frame.pack(pady=5)
 
         # Add buttons to add and remove parameter lines
-        self.add_button = ttk.Button(button_frame, text="Add Optical Line", command=self.add_optical_line)
+        self.add_button = ttk.Button(button_frame, text="Save", command=self.savestate)
         self.add_button.grid(row=0, column=0, padx=5)
+        self.add_button = ttk.Button(button_frame, text="Load", command=self.loadstate)
+        self.add_button.grid(row=0, column=1, padx=5)
         self.update_button = ttk.Button(button_frame, text="Update", command=self.update_plot)
-        self.update_button.grid(row=0, column=1, padx=5)
+        self.update_button.grid(row=0, column=2, padx=5)
 
         # Add ver and hor plot tickboxes
-        self.ver = tk.IntVar()
+        self.ver = tk.IntVar(value = 1)
         self.ver_check = ttk.Checkbutton(button_frame, text="Vertical", variable=self.ver)
         self.ver_check.grid(row = 1, column = 0, padx=5)
-        self.hor = tk.IntVar()
+        self.hor = tk.IntVar(value = 1)
         self.hor_check = ttk.Checkbutton(button_frame, text="Horizontal", variable=self.hor)
         self.hor_check.grid(row = 1, column = 1, padx=5)
 
@@ -128,6 +133,26 @@ class App:
         # Properly close the Matplotlib figure
         plt.close(self.fig)
         self.root.destroy()
+    
+    def savestate(self):
+        # Save the state of the GUI in dict for loading
+        state = {}
+        state["horver"] = (self.hor.get(), self.ver.get())
+        state["OptLines"] = self.lineslist.savestate()
+        state["samples"] = self.sample_var.get()
+        print(state)
+
+        fh.WriteJson(fh.SaveFileAs("./savestates"), state)
+    
+    def loadstate(self):
+        # Load the state of the GUI from a dict
+        state = fh.ReadJson(fh.ChooseSingleFile(initdir = "./savestates"))
+        self.hor.set(state["horver"][0])
+        self.ver.set(state["horver"][1])
+        self.sample_var.set(state["samples"])
+        self.lineslist.loadstate(state["OptLines"])
+        self.update_plot()
+
 
 if __name__ == "__main__":
     root = tk.Tk()

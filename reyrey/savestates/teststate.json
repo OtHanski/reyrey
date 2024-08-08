@@ -1,0 +1,60 @@
+{
+    "OptLines": {
+        "input": {
+            "Samples": 1000
+        },
+        "opticalLines": [
+            {
+                "fields": {},
+                "function": "Optical Line",
+                "item": {
+                    "hor": 1,
+                    "input": {
+                        "Whor": 0.001,
+                        "Wver": 0.001,
+                        "ZRhor": 0.0,
+                        "ZRver": 0.0,
+                        "Zhor": 0.0,
+                        "Zver": 0.0,
+                        "lam": 9.72e-07,
+                        "n": 1.0
+                    },
+                    "name": "New Optical Line",
+                    "parameters": [
+                        {
+                            "fields": {
+                                "0": 1.0
+                            },
+                            "function": "free",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 1.0
+                            },
+                            "function": "thinlens",
+                            "hor": 1,
+                            "ver": 0
+                        },
+                        {
+                            "fields": {
+                                "0": 1.0
+                            },
+                            "function": "free",
+                            "hor": 1,
+                            "ver": 1
+                        }
+                    ],
+                    "samples": 100,
+                    "ver": 1
+                }
+            }
+        ]
+    },
+    "horver": [
+        1,
+        1
+    ],
+    "samples": 1000
+}

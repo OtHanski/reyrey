@@ -54,10 +54,8 @@ class App:
         self.paramcanvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
 
-        self.updateFlag = tk.IntVar(value=0)
-        # Bind the updateFlag to the updateFlag_test function
-        self.updateFlag.trace_add("write", self.updateFlag_test)
-        self.lineslist = LineGUI(self, self.parameters_frame, id = 0, updateFlag = self.updateFlag)
+        # Add the lineslist element to hold the actual optical lines
+        self.lineslist = LineGUI(self, self.parameters_frame, id = 0)
 
         # List to hold parameter entries
         self.parameters = []
@@ -92,7 +90,7 @@ class App:
         # Clear the current plot
         for line in self.ax.get_lines():
             line.remove()
-        # Create an object to hold the lines
+        # Create/reset an object to hold the lines
         self.lines = []
         num_samples = self.sample_var.get()
         xydat = self.lineslist.replot(num_samples)
@@ -104,22 +102,10 @@ class App:
                 line = self.ax.plot(xydat[optline][horver]["x"], xydat[optline][horver]["w"])
                 self.lines.append(line)
         
-        """
-        self.x = np.linspace(0, 2 * np.pi, num_samples)
-        for line, (param_frame, ui_elements) in zip(self.lines, self.parameters):
-            function_var = ui_elements["shared"]["function"]["val"]
-            plot_function = self.get_selected_function(function_var.get())
-            y = plot_function(self.x, ui_elements)
-            line.set_ydata(y)
-        """
+        # Redraw the plot
         self.ax.relim()
         self.ax.autoscale_view()
         self.canvas.draw()
-    
-    def updateFlag_test(self):
-        print(f"Flag updated: {self.updateFlag.get()}")
-        self.updateFlag.set(0)
-        print(f"Flag reset: {self.updateFlag.get()}")
 
     def on_frame_configure(self, event):
         self.paramcanvas.configure(scrollregion=self.paramcanvas.bbox("all"))

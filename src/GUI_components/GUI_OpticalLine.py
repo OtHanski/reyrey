@@ -60,22 +60,22 @@ class LineParameter:
     
     def remove_fields(self):
         # Wipe old UI elements to replace with new
-        print("Removing fields")
+        if debug: ("Removing fields")
         for i in list(self.fields):
             for key in list(self.fields[i]):
                 if type(self.fields[i][key]) in [ttk.Label, ttk.Entry, ttk.Checkbutton]:
-                    print(f"Destroying {key}")
+                    if debug: print(f"Destroying {key}")
                     self.fields[i][key].destroy()
                 del self.fields[i][key]
-        print("Removing horverchecks")
+        if debug: print("Removing horverchecks")
         for key in list(self.horverchecks):
             if type(self.horverchecks[key]) in [ttk.Checkbutton]:
-                print(f"Destroying {key}")
+                if debug: print(f"Destroying {key}")
                 self.horverchecks[key].destroy()
             del self.horverchecks[key]
     
     def update_fields(self):
-        print("Updating fields")
+        if debug: print("Updating fields")
         self.remove_fields()
         self.init_fields()
 

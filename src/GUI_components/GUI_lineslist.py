@@ -68,7 +68,7 @@ class LineItem:
         del self.item
     
     def update_fields(self):
-        print("Updating fields")
+        if debug: print("Updating fields")
         self.remove_fields()
         self.init_fields()
 
@@ -80,7 +80,7 @@ class LineItem:
         
 
     def remove(self):
-        print(f"Removing {self.id}")
+        if debug: print(f"Removing {self.id}")
         self.parent.destroyLineParam(self.id)
 
 
@@ -89,11 +89,11 @@ class LineItem:
     
     def get_ABCD(self):
         self.func = matrixdicts[self.get_function()]["func"]
-        print(self.func)
+        if debug: print(self.func)
         matrixparams = {key: self.fields[f"val{i}"].get() for i, key in enumerate(matrixdicts[self.get_function()]["params"])}
         matrixparams["func"] = self.func
         ABCD = matrixparams#matrixdicts[self.get_function()]["func"](**{key: self.fields[f"val{i}"].get() for i, key in enumerate(matrixdicts[self.get_function()]["params"])})
-        print(ABCD)
+        if debug: print(ABCD)
         return ABCD
     
     def replot(self, n = 1000):

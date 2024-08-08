@@ -10,6 +10,7 @@ from GUI_components.GUI_lineslist import *
 # Import filehandler
 import utils.FileHandler as fh
 
+debug = False
 
 class App:
     def __init__(self, root):
@@ -87,8 +88,9 @@ class App:
         # Create/reset an object to hold the lines
         self.lines = []
         xydat = self.lineslist.replot()
-        print(f"xydat keys: {xydat.keys()}")
-        print(f"xydat values: {xydat[0]}")
+        if debug:
+            print(f"xydat keys: {xydat.keys()}")
+            print(f"xydat values: {xydat[0]}")
         for optline in xydat:
             # Plot vertical and/or horizontal as provided
             for horver in xydat[optline]:
@@ -113,7 +115,7 @@ class App:
         state = {}
         state["horver"] = (self.hor.get(), self.ver.get())
         state["OptLines"] = self.lineslist.savestate()
-        print(state)
+        if debug: print(state)
 
         fh.WriteJson(fh.SaveFileAs("./savestates"), state)
     

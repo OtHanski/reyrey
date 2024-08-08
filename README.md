@@ -1,4 +1,4 @@
-# HOW TO RUN
+## HOW TO RUN
 
 1. Create and activate virtual env, and install dependencies (Windows example below)
 ```
@@ -8,7 +8,7 @@
 ```
 
 2. Run GUI.py
-``´
+```
 ../reyrey (myenv) > python src\GUI.py
 ```
 
@@ -16,3 +16,16 @@
 ```
 ../reyrey (myenv) > deactivate
 ```
+
+## User instructions
+
+The program is a GUI interface for designing optical beamlines for reshaping of laser beams based on [Ray transfer matrix analysis](https://en.wikipedia.org/wiki/Ray_transfer_matrix_analysis). The program provides the following functionality:
+
+- Design a beam shaping line by inserting optical components and setting the input beam parameters
+- Design linear and ribbon cavities (Or add your own)
+- Calculate and plot beam waist transformations based on the optical line components
+- Save & Load optical line configurations for future use
+
+## Credit
+
+Credit to Artem Golovizin for providing the basis for the ray transfer calculations.

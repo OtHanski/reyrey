@@ -96,7 +96,7 @@ class BeamTrace:
         self.ws = []
         self.qs_to_print = []
         q_in = self.q_in
-        print(f"q_in: {q_in}")
+        if debug: print(f"q_in: {q_in}")
         direction = 1 # direction of the beam (if mirror comes it changes the direction)
         self.matrexes.reverse()
 

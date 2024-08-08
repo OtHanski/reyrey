@@ -5,8 +5,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import numpy as np
 
 # Import the GUI component prototypes and init functions
-from GUI_prototypes import *
-from GUI_lineslist import *
+from GUI_components.GUI_lineslist import *
 
 # Import filehandler
 import utils.FileHandler as fh
@@ -79,12 +78,7 @@ class App:
         # Add the Matplotlib toolbar
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.main_frame)
         self.toolbar.update()
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-
-
-    def add_optical_line(self):
-        pass    
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)  
 
     def update_plot(self):
         # Clear the current plot

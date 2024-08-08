@@ -1,3 +1,6 @@
 accesskey.txt
 myenv
 __pycache__
+
+# Ignore savestate files
+*.json

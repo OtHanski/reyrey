@@ -67,8 +67,10 @@ class App:
 
         # Create a figure and axis
         self.fig, self.ax = plt.subplots()
-        self.x = np.linspace(0, 2 * np.pi, 100)
         self.lines = []
+        # Add X and Y labels
+        self.ax.set_xlabel("Distance (m)")
+        self.ax.set_ylabel("Beam Waist (mm)")
 
         # Create a canvas and add the figure to it
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.main_frame)
@@ -79,14 +81,7 @@ class App:
         self.toolbar.update()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-        # Frame to hold the sample control
-        sample_frame = ttk.Frame(self.main_frame)
-        sample_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=5)
 
-        ttk.Label(sample_frame, text="Number of Samples:").pack(side=tk.LEFT, padx=5)
-        self.sample_var = tk.IntVar(value=100)
-        self.sample_entry = ttk.Entry(sample_frame, textvariable=self.sample_var)
-        self.sample_entry.pack(side=tk.LEFT, padx=5)
 
     def add_optical_line(self):
         pass    
@@ -97,14 +92,13 @@ class App:
             line.remove()
         # Create/reset an object to hold the lines
         self.lines = []
-        num_samples = self.sample_var.get()
-        xydat = self.lineslist.replot(num_samples)
+        xydat = self.lineslist.replot()
         print(f"xydat keys: {xydat.keys()}")
         print(f"xydat values: {xydat[0]}")
         for optline in xydat:
             # Plot vertical and/or horizontal as provided
             for horver in xydat[optline]:
-                line = self.ax.plot(xydat[optline][horver]["x"], xydat[optline][horver]["w"])
+                line = self.ax.plot(np.array(xydat[optline][horver]["x"]), np.array(xydat[optline][horver]["w"])*1E3)
                 self.lines.append(line)
         
         # Redraw the plot
@@ -125,7 +119,6 @@ class App:
         state = {}
         state["horver"] = (self.hor.get(), self.ver.get())
         state["OptLines"] = self.lineslist.savestate()
-        state["samples"] = self.sample_var.get()
         print(state)
 
         fh.WriteJson(fh.SaveFileAs("./savestates"), state)
@@ -135,7 +128,6 @@ class App:
         state = fh.ReadJson(fh.ChooseSingleFile(initdir = "./savestates"))
         self.hor.set(state["horver"][0])
         self.ver.set(state["horver"][1])
-        self.sample_var.set(state["samples"])
         self.lineslist.loadstate(state["OptLines"])
         self.update_plot()
 

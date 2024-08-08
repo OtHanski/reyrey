@@ -8,79 +8,6 @@ import raytracing.matrixcalc as rey
 
 debug = True
 
-class paramsine:
-    # Prototype for sine wave
-    def __init__(self, parent, parentframe,  id = 0, location = (0,0), updateFlag = None):
-        self. parent = parent
-        # Create simple frame with sample tkinter components
-        self.frame = ttk.LabelFrame(parentframe, text="Sine Wave", relief=tk.RIDGE)
-        self.frame.grid(row=0, column=0, pady=5, sticky="news")
-        self.frame.columnconfigure(0, weight=1)
-        self.frame.rowconfigure(0, weight=1)
-        self.frame.rowconfigure(1, weight=1)
-        self.frame.rowconfigure(2, weight=1)
-
-        self.amplitude = tk.DoubleVar(value=1)
-        self.amplitude_label = ttk.Label(self.frame, text="Amplitude")
-        self.amplitude_label.grid(row=0, column=0, padx=5)
-        self.amplitude_entry = ttk.Entry(self.frame, textvariable=self.amplitude)
-        self.amplitude_entry.grid(row=0, column=1, padx=5)
-
-        self.frequency = tk.DoubleVar(value=1)
-        self.frequency_label = ttk.Label(self.frame, text="Frequency")
-        self.frequency_label.grid(row=1, column=0, padx=5)
-        self.frequency_entry = ttk.Entry(self.frame, textvariable=self.frequency)
-        self.frequency_entry.grid(row=1, column=1, padx=5)
-
-class paramcosine:
-    # Prototype for cosine wave
-    def __init__(self, parent, parentframe,  id = 0, location = (0,0), updateFlag = None):
-        self. parent = parent
-        # Create simple frame with sample tkinter components
-        self.frame = ttk.LabelFrame(parentframe, text="Cosine Wave", relief=tk.RIDGE)
-        self.frame.grid(row=0, column=0, pady=5, sticky="news")
-        self.frame.columnconfigure(0, weight=1)
-        self.frame.rowconfigure(0, weight=1)
-        self.frame.rowconfigure(1, weight=1)
-        self.frame.rowconfigure(2, weight=1)
-
-        self.amplitude = tk.DoubleVar(value=1)
-        self.amplitude_label = ttk.Label(self.frame, text="Amplitude")
-        self.amplitude_label.grid(row=0, column=0, padx=5)
-        self.amplitude_entry = ttk.Entry(self.frame, textvariable=self.amplitude)
-        self.amplitude_entry.grid(row=0, column=1, padx=5)
-
-        self.frequency = tk.DoubleVar(value=1)
-        self.frequency_label = ttk.Label(self.frame, text="Frequency")
-        self.frequency_label.grid(row=1, column=0, padx=5)
-        self.frequency_entry = ttk.Entry(self.frame, textvariable=self.frequency)
-        self.frequency_entry.grid(row=1, column=1, padx=5)
-    
-class paramtan:
-    # Prototype for tangent wave
-    def __init__(self, parent, parentframe,  id = 0, location = (0,0), updateFlag = None):
-        self. parent = parent
-        # Create simple frame with sample tkinter components
-        self.frame = ttk.LabelFrame(parentframe, text="Tangent Wave", relief=tk.RIDGE)
-        self.frame.grid(row=0, column=0, pady=5, sticky="news")
-        self.frame.columnconfigure(0, weight=1)
-        self.frame.rowconfigure(0, weight=1)
-        self.frame.rowconfigure(1, weight=1)
-        self.frame.rowconfigure(2, weight=1)
-
-        self.amplitude = tk.DoubleVar(value=1)
-        self.amplitude_label = ttk.Label(self.frame, text="Amplitude")
-        self.amplitude_label.grid(row=0, column=0, padx=5)
-        self.amplitude_entry = ttk.Entry(self.frame, textvariable=self.amplitude)
-        self.amplitude_entry.grid(row=0, column=1, padx=5)
-
-        self.frequency = tk.DoubleVar(value=1)
-        self.frequency_label = ttk.Label(self.frame, text="Frequency")
-        self.frequency_label.grid(row=1, column=0, padx=5)
-        self.frequency_entry = ttk.Entry(self.frame, textvariable=self.frequency)
-        self.frequency_entry.grid(row=1, column=1, padx=5)
-
-
 opticalitems = {"Optical Line": OpticalLine}
 
 class LineItem:
@@ -170,8 +97,8 @@ class LineItem:
         print(ABCD)
         return ABCD
     
-    def replot(self):
-        return self.item.replot()
+    def replot(self, n = 1000):
+        return self.item.replot(n)
     
     def savestate(self):
         # Save current state in dict for loading
@@ -244,10 +171,15 @@ class LineGUI:
         self.inputframe.columnconfigure(0, weight=1)
         self.inputframe.rowconfigure(0, weight=1)
 
+        self.samples = tk.IntVar(value=1000)
+        self.samples_label = ttk.Label(self.inputframe, text="Samples per interval")
+        self.samples_label.grid(row=0, column=0, padx=5)
+        self.samples_entry = ttk.Entry(self.inputframe, textvariable=self.samples)
+        self.samples_entry.grid(row=0, column=1, padx=5)
         # (Z = 0, ZR = 0, lam = 0, W = 0, n = 1)
-        self.input = {"Samples": tk.IntVar(value=1000)} # Refractive index
+        self.input = {} # List of inputs, example: "Samples": tk.IntVar(value=1000)
         self.input_widgets = {}
-        i = 0
+        i = 1
         for key in self.input:
             self.input_widgets[key] = ttk.Label(self.inputframe, text=key)
             self.input_widgets[key].grid(row=i, column=0, padx=5)
@@ -288,7 +220,7 @@ class LineGUI:
     def calculate_beamshape(self):
         pass
 
-    def get_lines(self, n = 1000):
+    def get_lines(self):
         xydat = {}
         i = 0
         for line in self.opticalLines:
@@ -296,11 +228,11 @@ class LineGUI:
             i += 1
         return xydat
 
-    def replot(self, n = 1000):
+    def replot(self):
         plotdata = {}
         i = 0
         for optLine in self.opticalLines:
-            plotdata[i] = optLine.replot()
+            plotdata[i] = optLine.replot(n = self.samples.get())
             i+=1
         if debug: print(f"Replot done in LineGUI, keys: {plotdata.keys()}")
         if debug: print(f"Replot done in LineGUI, values: {plotdata[0].keys()}")
@@ -309,14 +241,23 @@ class LineGUI:
     def savestate(self):
         state = {}
         state["input"] = {}
+        state["Samples"] = self.samples.get()
         for key in self.input:
             state["input"][key] = self.input[key].get()
         state["opticalLines"] = [optLine.savestate() for optLine in self.opticalLines]
         return state
     
     def loadstate(self, state):
+        # Load the state of the GUI from a dict
+        # First ask whether to remove pre-existing elements
+        if tk.messagebox.askyesno("Warning", "Remove pre-existing optical lines?"):
+            while self.opticalLines:
+                self.destroyLineParam(0)
+        # Set samples and input parameters
+        self.samples.set(state["Samples"])
         for key in state["input"]:
             self.input[key].set(state["input"][key])
+        # Load optical lines
         for optLine in state["opticalLines"]:
             self.add_parameter()
             self.opticalLines[-1].loadstate(optLine)

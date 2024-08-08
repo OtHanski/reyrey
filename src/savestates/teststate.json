@@ -1,7 +1,7 @@
 {
     "OptLines": {
+        "Samples": 1000,
         "input": {
-            "Samples": 1000
         },
         "opticalLines": [
             {

@@ -1,8 +1,0 @@
-SOURCE: W = 2E-3, ZR = inf, lam = 972E-9, n = 1
-FREESPACE: Z = 20E-3, n = 1
-THINLENS: F = 40E-3
-FREESPACE: Z = 50E-3, n = 1
-THINLENS: F = 40E-3
-FREESPACE: Z = 60E-3, n = 1
-THINLENS: F = 250E-3
-FREESPACE: Z = 500E-3, n = 1

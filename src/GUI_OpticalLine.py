@@ -119,14 +119,19 @@ class LineParameter:
         return (self.ABCDhor, self.ABCDver)
     
     def savestate(self):
-        state = {}
-        state["function"] = self.component.get()
-        state["hor"] = self.hor.get()
-        state["ver"] = self.ver.get()
-        state["fields"] = {}
-        for key in self.fields:
-            state["fields"][key] = self.fields[key]["val"].get()
-        return state
+        try:
+            state = {}
+            state["function"] = self.component.get()
+            state["hor"] = self.hor.get()
+            state["ver"] = self.ver.get()
+            state["fields"] = {}
+            for key in self.fields:
+                state["fields"][key] = self.fields[key]["val"].get()
+            return state
+        except Exception as e:
+            print("Error in savestate:",e)
+            print("State:",state)
+            print("Fields:",self.fields)
     
     def loadstate(self, state):
         self.component.set(state["function"])
@@ -233,7 +238,6 @@ class OpticalLine:
     def add_parameter(self):
         id = len(self.parameters)
         new_parameter = LineParameter(self, self.componentframe, id)
-        new_parameter
         self.parameters.append(new_parameter)
         self.componentframe.rowconfigure(id, weight=1)
     
@@ -276,7 +280,8 @@ class OpticalLine:
         #self.zrhor = rey.z_r(self.whor, self.input["lam"].get())
         #self.zrver = rey.z_r(self.wver, self.input["lam"].get())
 
-    def replot(self):
+    def replot(self, n = 1000):
+        self.samples.set(n)
         self.matrices_hor = []
         self.matrices_ver = []
         for param in self.parameters:

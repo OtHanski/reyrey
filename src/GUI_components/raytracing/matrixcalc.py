@@ -1,9 +1,8 @@
 import numpy as np
 from math import *
 from scipy.optimize import root
-import raytracing.matrices as ma
 
-debug = True
+debug = False
 
 def parseOSYS():
     return 1

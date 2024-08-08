@@ -2,10 +2,10 @@ from copy import deepcopy
 import tkinter as tk
 from tkinter import ttk
 
-from raytracing.matrices import matrixdicts, ringCavity, linCavity, GUI_matrix
-import raytracing.matrixcalc as rey
+from .raytracing.matrices import matrixdicts, ringCavity, linCavity, GUI_matrix
+from .raytracing.matrixcalc import BeamTrace, calcq
 
-debug = True
+debug = False
 
 class LineParameter:
     """tkinter widget for a single line parameter"""
@@ -263,15 +263,15 @@ class OpticalLine:
         
         if self.hor.get():
             if debug: print("Constructing Horizontal")
-            self.horline = rey.BeamTrace(self.matrices_hor, 
-                                     rey.calcq(Z = self.input["Zhor"].get(), lam = self.input["lam"].get(), W = self.input["Whor"].get(), n = self.input["n"].get()),
+            self.horline = BeamTrace(self.matrices_hor, 
+                                     calcq(Z = self.input["Zhor"].get(), lam = self.input["lam"].get(), W = self.input["Whor"].get(), n = self.input["n"].get()),
                                      n_points = self.samples.get(), 
                                      lda = self.input["lam"].get())
             self.horline.constructRey()
         if self.ver.get():
             if debug: print("Constructing Vertical")
-            self.verline = rey.BeamTrace(self.matrices_ver, 
-                                        rey.calcq(Z = self.input["Zver"].get(), lam = self.input["lam"].get(), W = self.input["Wver"].get(), n = self.input["n"].get()),
+            self.verline = BeamTrace(self.matrices_ver, 
+                                        calcq(Z = self.input["Zver"].get(), lam = self.input["lam"].get(), W = self.input["Wver"].get(), n = self.input["n"].get()),
                                         n_points = self.samples.get(), 
                                         lda = self.input["lam"].get())
             self.verline.constructRey()

@@ -96,7 +96,7 @@ def linCavity(l_cavity = 75E-3, R = 50E-3):
     
     cavityver = cavityhor
     
-    return {"hor": cavityhor, "ver": cavityhor}
+    return {"hor": cavityhor, "ver": cavityver}
 
 
 lenses = 2

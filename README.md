@@ -1,6 +1,6 @@
 ## HOW TO RUN
 
-1. Create and activate virtual env, and install dependencies (Windows example below)
+1. Create and activate virtual env, and install dependencies (Windows example below), or install dependency packages from `requirements.txt` in your global env.
 ```
 ../reyrey > python -m venv myenv
 ../reyrey > myenv\Scripts\activate
@@ -25,6 +25,9 @@ The program is a GUI interface for designing optical beamlines for reshaping of 
 - Design linear and ribbon cavities (Or add your own)
 - Calculate and plot beam waist transformations based on the optical line components
 - Save & Load optical line configurations for future use
+
+Explanation of the UI:
+
 
 ## Credit
 

@@ -2,12 +2,13 @@ from copy import deepcopy
 import tkinter as tk
 from tkinter import ttk
 
-from .raytracing.matrices import matrixdicts, ringCavity, linCavity
+from .raytracing.matrices import matrixdicts
 from .GUI_OpticalLine import OpticalLine
+from .GUI_cavities import RibbonCavity
 
 debug = False
 
-opticalitems = {"Optical Line": OpticalLine}
+opticalitems = {"Optical Line": OpticalLine, "Ring Cavity": RibbonCavity}
 
 class LineItem:
     """tkinter widget for a single line parameter"""

@@ -1,13 +1,19 @@
-from copy import deepcopy
 import tkinter as tk
 from tkinter import ttk
+from math import radians
 
-from .raytracing.matrices import matrixdicts, ringCavity, linCavity, GUI_matrix
-from .raytracing.matrixcalc import BeamTrace, calcq
+# Import the GUI component prototypes and init functions 
+# format depends on whether this is run as a script or imported as a module
+if __name__ == "__main__":
+    from raytracing.matrices import ringCavity, linCavity
+    from raytracing.matrixcalc import BeamTrace, calcq, cavityq, buildMatrixList, compositeABCD
+else:
+    from .raytracing.matrices import ringCavity, linCavity
+    from .raytracing.matrixcalc import BeamTrace, calcq, cavityq, buildMatrixList, compositeABCD
 
 debug = False
 
-class LinCavity:
+class RibbonCavity:
     """tkinter widget for a single optical line"""
     def __init__(self, parent, parentframe,  id = 0, location = (0,0), updateFlag = None):
         self.parent = parent
@@ -69,14 +75,15 @@ class LinCavity:
         self.inputframe.rowconfigure(0, weight=1)
 
         # (Z = 0, ZR = 0, lam = 0, W = 0, n = 1)
-        self.input = {"Zhor": tk.DoubleVar(value=0), # Distance from waist
-                      "Zver": tk.DoubleVar(value=0), # Distance from waist
-                      "ZRhor": tk.DoubleVar(value=0), # Rayleigh length
-                      "ZRver": tk.DoubleVar(value=0), # Rayleigh length
-                      "Whor": tk.DoubleVar(value=1E-3), # Beam waist
-                      "Wver": tk.DoubleVar(value=1E-3), # Beam waist
-                      "lam": tk.DoubleVar(value=972E-9), # Wavelength
-                      "n": tk.DoubleVar(value=1)} # Refractive index
+        self.input = {"lam": tk.DoubleVar(value = 972E-9), # Wavelength
+                      "l_focus": tk.DoubleVar(value=60.1E-3), # Distance from waist
+                      "l_free": tk.DoubleVar(value=380E-3), # Distance from waist
+                      "l_crystal": tk.DoubleVar(value=15E-3), # Rayleigh length
+                      "R_foc": tk.DoubleVar(value=60.1E-3), # Rayleigh length
+                      "n_SHG": tk.DoubleVar(value=1.567), # Refractive index of SHG crystal
+                      "θ (deg)": tk.DoubleVar(value=1E-3), # R mirror Incidence angle
+                      "h": tk.DoubleVar(value=972E-9), # Cavity height
+                      "x_offset": tk.DoubleVar(value=1)} # Refractive index
         self.input_widgets = {}
         i = 0
         for key in self.input:
@@ -124,15 +131,18 @@ class LinCavity:
         
         if self.hor.get():
             if debug: print("Constructing Horizontal")
+            # Calculate the fundamental mode waist:
+            whor = cavityq(self.horABCD)
             self.horline = BeamTrace(self.matrices_hor, 
-                                     calcq(Z = self.input["Zhor"].get(), lam = self.input["lam"].get(), W = self.input["Whor"].get(), n = self.input["n"].get()),
+                                     whor*1j,
                                      n_points = self.samples.get(), 
                                      lda = self.input["lam"].get())
             self.horline.constructRey()
         if self.ver.get():
             if debug: print("Constructing Vertical")
+            wver = cavityq(self.verABCD)
             self.verline = BeamTrace(self.matrices_ver, 
-                                        calcq(Z = self.input["Zver"].get(), lam = self.input["lam"].get(), W = self.input["Wver"].get(), n = self.input["n"].get()),
+                                        wver*1j,
                                         n_points = self.samples.get(), 
                                         lda = self.input["lam"].get())
             self.verline.constructRey()
@@ -143,18 +153,17 @@ class LinCavity:
 
     def replot(self, n = 1000):
         self.samples.set(n)
-        self.matrices_hor = []
-        self.matrices_ver = []
-        for param in self.parameters:
-            hor, ver = param.calc_ABCD()
-            self.matrices_hor.append(hor)
-            self.matrices_ver.append(ver)
-        if debug:
-            print(self.matrices_hor)
-            print(self.matrices_ver)
+        self.matrices = ringCavity(l_focus = self.input["l_focus"].get(), # Distance between curved focus mirrors
+                                   l_free = self.input["l_free"].get(), # Free arm length (l_cav-l_focus)
+                                   l_crystal = self.input["l_crystal"].get(), # SHG crystal length
+                                   R = self.input["R_foc"].get(), # Curvature radius of curved mirrors
+                                   n_crystal = self.input["n_SHG"].get(), # Refractive index of SHG crystal
+                                   theta = self.input["θ (deg)"].get()) # Angle of incidence on curved mirrors
+        self.matrices_hor = buildMatrixList(self.matrices["hor"])
+        self.matrices_ver = buildMatrixList(self.matrices["ver"])
+        self.horABCD = compositeABCD(self.matrices_hor)
+        self.verABCD = compositeABCD(self.matrices_ver)
 
-        self.matrices_hor.reverse()
-        self.matrices_ver.reverse()
         self.calculate_beamshape()
         self.plotdata = {}
         if self.hor.get():
@@ -193,7 +202,7 @@ class LinCavity:
             self.add_parameter()
             self.parameters[-1].loadstate(param)
 
-class RibbonCavity:
+class LinCavity:
     """tkinter widget for a single optical line"""
     def __init__(self, parent, parentframe,  id = 0, location = (0,0), updateFlag = None):
         self.parent = parent
@@ -384,7 +393,8 @@ def test():
     root.title("Optical Line Test")
     tk.Grid.rowconfigure(root, 0, weight=1)
     tk.Grid.columnconfigure(root, 0, weight=1)
-    optical_line = OpticalLine(root)
+    ribbon = RibbonCavity(root, root, id = 0, location = (0,0))
+    lin = LinCavity(root, root, id = 1, location = (0,1))
     root.mainloop()
 
 if __name__ == "__main__":

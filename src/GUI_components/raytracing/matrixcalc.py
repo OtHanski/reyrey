@@ -145,4 +145,7 @@ class BeamTrace:
         for i in range(1,len(self.ws)-1):
             if self.ws[i] < self.ws[i-1] and self.ws[i] < self.ws[i+1]:
                 self.focii.append((self.xs[i],self.ws[i]))
+        
+        self.xs = np.array(self.xs)
+        self.ws = np.array(self.ws)
 

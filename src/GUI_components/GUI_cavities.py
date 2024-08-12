@@ -74,16 +74,16 @@ class RibbonCavity:
         self.inputframe.columnconfigure(0, weight=1)
         self.inputframe.rowconfigure(0, weight=1)
 
-        # (Z = 0, ZR = 0, lam = 0, W = 0, n = 1)
+        # l_focus = 61.6E-3, l_free = 69.3E-3, l_crystal = 15E-3, R = 50E-3, n_crystal = 1.567, theta = radians(18.2)
         self.input = {"lam": tk.DoubleVar(value = 972E-9), # Wavelength
-                      "l_focus": tk.DoubleVar(value=60.1E-3), # Distance from waist
-                      "l_free": tk.DoubleVar(value=380E-3), # Distance from waist
+                      "l_focus": tk.DoubleVar(value=61.6E-3), # Distance from waist
+                      "l_free": tk.DoubleVar(value=69.3E-3), # Distance from waist
                       "l_crystal": tk.DoubleVar(value=15E-3), # Rayleigh length
-                      "R_foc": tk.DoubleVar(value=60.1E-3), # Rayleigh length
+                      "R_foc": tk.DoubleVar(value=50E-3), # Rayleigh length
                       "n_SHG": tk.DoubleVar(value=1.567), # Refractive index of SHG crystal
-                      "θ (deg)": tk.DoubleVar(value=1E-3), # R mirror Incidence angle
-                      "h": tk.DoubleVar(value=972E-9), # Cavity height
-                      "x_offset": tk.DoubleVar(value=1)} # Refractive index
+                      "θ (deg)": tk.DoubleVar(value=10), # R mirror Incidence angle
+                      #"h": tk.DoubleVar(value=972E-9), # Cavity height
+                      "x_offset": tk.DoubleVar(value=0)} # Refractive index
         self.input_widgets = {}
         i = 0
         for key in self.input:
@@ -158,7 +158,7 @@ class RibbonCavity:
                                    l_crystal = self.input["l_crystal"].get(), # SHG crystal length
                                    R = self.input["R_foc"].get(), # Curvature radius of curved mirrors
                                    n_crystal = self.input["n_SHG"].get(), # Refractive index of SHG crystal
-                                   theta = self.input["θ (deg)"].get()) # Angle of incidence on curved mirrors
+                                   theta = radians(self.input["θ (deg)"].get())) # Angle of incidence on curved mirrors
         self.matrices_hor = buildMatrixList(self.matrices["hor"])
         self.matrices_ver = buildMatrixList(self.matrices["ver"])
         self.horABCD = compositeABCD(self.matrices_hor)
@@ -168,13 +168,14 @@ class RibbonCavity:
         self.plotdata = {}
         if self.hor.get():
             self.plotdata["hor"] = {}
-            self.plotdata["hor"]["x"] = self.horline.xs
+            self.plotdata["hor"]["x"] = self.horline.xs + self.input["x_offset"].get()
             self.plotdata["hor"]["w"] = self.horline.ws
         if self.ver.get():
             self.plotdata["ver"] = {}
-            self.plotdata["ver"]["x"] = self.verline.xs
+            self.plotdata["ver"]["x"] = self.verline.xs + self.input["x_offset"].get()
             self.plotdata["ver"]["w"] = self.verline.ws
         if debug: print(f"plotdata keys: {self.plotdata.keys()}")
+        if debug: print(f"plotdata: {self.plotdata}")
         return self.plotdata
     
     def savestate(self):
@@ -290,12 +291,6 @@ class LinCavity:
 
         self.parameters = []
         ### END COMPONENT FRAME ###
-
-    def add_parameter(self):
-        id = len(self.parameters)
-        new_parameter = LineParameter(self, self.componentframe, id)
-        self.parameters.append(new_parameter)
-        self.componentframe.rowconfigure(id, weight=1)
     
     def destroyLineParam(self, id):
         param = self.parameters.pop(id)

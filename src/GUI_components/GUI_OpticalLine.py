@@ -134,6 +134,7 @@ class LineParameter:
             print("Fields:",self.fields)
     
     def loadstate(self, state):
+        print(state)
         self.component.set(state["function"])
         self.update_fields()
         self.hor.set(state["hor"])
@@ -142,8 +143,10 @@ class LineParameter:
             print(f"Loading state: {state}")
             print(f"Fields: {self.fields}")
         for key in self.fields:
+            print(f"Setting field {key} to {state['fields'][str(key)]}")
+            print(f"Field: {self.fields[key]["val"]}")
             self.fields[key]["val"].set(state["fields"][str(key)])
-        self.update_fields()
+            print(self.fields[key]["val"].get())
 
 
 class OpticalLine:
@@ -292,8 +295,8 @@ class OpticalLine:
             print(self.matrices_hor)
             print(self.matrices_ver)
 
-        self.matrices_hor.reverse()
-        self.matrices_ver.reverse()
+        #self.matrices_hor.reverse()
+        #self.matrices_ver.reverse()
         self.calculate_beamshape()
         self.plotdata = {}
         if self.hor.get():

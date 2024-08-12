@@ -82,6 +82,7 @@ class BeamTrace:
         self.n_points = n_points
         self.z0 = z0 #distance from q_in point to 0, needed only for convinience
         self.matrexes = matrexes # array of matrixes or labels - strings (names) at wich to calculate q-parameter
+        self.composite = compositeABCD(matrexes) # composite matrix
         self.xs = [] # x coordinates
         self.ws = [] # beam waists vs. xs
         self.qz_to_print = [] # future array of (label,q) for labels in matrexes

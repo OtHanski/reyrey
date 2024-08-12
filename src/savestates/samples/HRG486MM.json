@@ -18,7 +18,7 @@
                         "x_offset": 0.433,
                         "\u03b8 (deg)": 10.0
                     },
-                    "name": "New Optical Line",
+                    "name": "SHG486",
                     "parameters": [],
                     "samples": 1000,
                     "ver": 1
@@ -39,7 +39,7 @@
                         "lam": 9.72e-07,
                         "n": 1.0
                     },
-                    "name": "New Optical Line",
+                    "name": "ML972",
                     "parameters": [
                         {
                             "fields": {

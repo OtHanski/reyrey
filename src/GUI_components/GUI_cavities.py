@@ -119,10 +119,10 @@ class RibbonCavity:
     
     def showhide(self):
         # Show or hide the optical line
-        if self.componentframe.winfo_ismapped():
-            self.componentframe.grid_remove()
+        if self.inputframe.winfo_ismapped():
+            self.inputframe.grid_remove()
         else:
-            self.componentframe.grid()
+            self.inputframe.grid()
 
     def calculate_beamshape(self):
         # Calculate the beam shape at the end of the optical line

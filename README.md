@@ -26,8 +26,13 @@ The program is a GUI interface for designing optical beamlines for reshaping of 
 - Calculate and plot beam waist transformations based on the optical line components
 - Save & Load optical line configurations for future use
 
+In the `savestates/samples` folder there are example setups for playing around.
+
+Note that if cavity parameters are unstable, currently the cavity calculations simply fail and produce null output (no plot). To get a stable cavity to start optimizing parameters from one can use as an initial guess `l_focus = l_free = 1.2 * R_focus` and `theta = 10 deg`.
+
 Explanation of the UI:
 
+TODO
 
 ## Credit
 

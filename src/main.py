@@ -37,7 +37,7 @@ class App:
         self.add_button.grid(row=0, column=0, padx=5)
         self.add_button = ttk.Button(button_frame, text="Load", command=self.loadstate)
         self.add_button.grid(row=0, column=1, padx=5)
-        self.update_button = ttk.Button(button_frame, text="Update", command=self.update_plot)
+        self.update_button = ttk.Button(button_frame, text="Replot", command=self.update_plot)
         self.update_button.grid(row=0, column=2, padx=5)
 
         # Add ver and hor plot tickboxes
@@ -79,7 +79,7 @@ class App:
         # Add the Matplotlib toolbar
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.main_frame)
         self.toolbar.update()
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)  
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
     def update_plot(self):
         # Clear the current plot
@@ -97,6 +97,10 @@ class App:
                 line = self.ax.plot(np.array(xydat[optline][horver]["x"]), np.array(xydat[optline][horver]["w"])*1E3)
                 self.lines.append(line)
         
+        # Add legend to the legend frame
+        self.ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05),
+          ncol=3, fancybox=True, shadow=True)
+
         # Redraw the plot
         self.ax.relim()
         self.ax.autoscale_view()

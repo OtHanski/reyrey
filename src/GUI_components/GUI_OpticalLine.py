@@ -200,7 +200,7 @@ class OpticalLine:
         self.hor_check = ttk.Checkbutton(self.button_frame, text="Horizontal", variable=self.hor)
         self.hor_check.grid(row=1, column=1, padx=5)
         # Replot button
-        self.replot_button = ttk.Button(self.button_frame, text="Replot", command=self.replot)
+        self.replot_button = ttk.Button(self.button_frame, text="Update", command=self.replot)
         self.replot_button.grid(row=1, column=2, padx=5)
         ### END BUTTON FRAME ###
 

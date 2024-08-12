@@ -1,5 +1,6 @@
 accesskey.txt
 myenv
+venv
 __pycache__
 
 # Ignore savestate files

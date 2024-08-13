@@ -4,21 +4,20 @@ Define the class prototype for Optical line implements in the GUI.
 
 import tkinter as tk
 from tkinter import ttk
-from math import radians
 
 # Import the GUI component prototypes and init functions 
 # format depends on whether this is run as a script or imported as a module
 if __name__ == "__main__":
-    from raycalc.matrices import matrixdicts, GUI_matrix, ringCavity, linCavity
-    from raycalc.matrixcalc import BeamTrace, calcq, cavityq, buildMatrixList, compositeABCD
+    from raycalc.matrices import matrixdicts, GUI_matrix
+    from raycalc.matrixcalc import BeamTrace, calcq
 else:
-    from .raycalc.matrices import matrixdicts, GUI_matrix, ringCavity, linCavity
-    from .raycalc.matrixcalc import BeamTrace, calcq, cavityq, buildMatrixList, compositeABCD
+    from .raycalc.matrices import matrixdicts, GUI_matrix
+    from .raycalc.matrixcalc import BeamTrace, calcq
 
 debug = False
 
 class LineParameter:
-    """tkinter widget for a single line parameter"""
+    """tkinter widget for a single optical beamline parameter"""
     def __init__(self, parent, parentframe: ttk.Frame, id = 0):
         self.parent = parent
         self.id = id
@@ -106,17 +105,13 @@ class LineParameter:
             param = self.fields[key]["label"]["text"]
             matrixparams[param] = self.fields[key]["val"].get()
 
+        matrixparams["hor"] = self.hor.get()
+        matrixparams["ver"] = self.ver.get()
+
         try:
-            if self.hor.get():
-                self.ABCDhor = GUI_matrix(matrixparams)
-            else:
-                # If the component doesn't support horizontal, set ABCDhor to identity matrix
-                self.ABCDhor = GUI_matrix({"func": "identity"})
-            if self.ver.get():
-                self.ABCDver = GUI_matrix(matrixparams)
-            else:
-                # If the component doesn't support vertical, set ABCDver to identity matrix
-                self.ABCDver = GUI_matrix({"func": "identity"})
+            ABCD = GUI_matrix(matrixparams)
+            self.ABCDhor = ABCD["hor"]
+            self.ABCDver = ABCD["ver"]
     
         except Exception as e:
             print("Error in calc_ABCD:",e)
@@ -144,7 +139,6 @@ class LineParameter:
             print("Fields:",self.fields)
     
     def loadstate(self, state):
-        print(state)
         self.component.set(state["function"])
         self.update_fields()
         self.hor.set(state["hor"])
@@ -153,8 +147,9 @@ class LineParameter:
             print(f"Loading state: {state}")
             print(f"Fields: {self.fields}")
         for key in self.fields:
-            print(f"Setting field {key} to {state['fields'][str(key)]}")
-            print(f"Field: {self.fields[key]["val"]}")
+            if debug:
+                print(f"Setting field {key} to {state['fields'][str(key)]}")
+                print(f"Field: {self.fields[key]["val"]}")
             self.fields[key]["val"].set(state["fields"][str(key)])
             print(self.fields[key]["val"].get())
 
@@ -220,6 +215,10 @@ class GUI_OptLineProto:
         self.plotoptions["hor"]["plot"] = tk.IntVar(value = 1)
         self.hor_check = ttk.Checkbutton(self.button_frame, text="Horizontal", variable=self.plotoptions["hor"]["plot"])
         self.hor_check.grid(row=1, column=1, padx=5)
+        # Set up references to hor and ver for convenience
+        self.hor = self.plotoptions["hor"]["plot"]
+        self.ver = self.plotoptions["ver"]["plot"]
+
         # Replot button
         self.replot_button = ttk.Button(self.button_frame, text="Replot", command=self.replot)
         self.replot_button.grid(row=1, column=2, padx=5)
@@ -285,7 +284,7 @@ class GUI_OptLineProto:
         else:
             self.componentframe.grid()
 
-    def calcq(self):
+    def calcqs(self):
         self.qhor = calcq(Z = self.input["Zhor"].get(), 
                           ZR = self.input["ZRhor"].get(), 
                           lam = self.input["lam"].get(), 
@@ -296,18 +295,19 @@ class GUI_OptLineProto:
                           lam = self.input["lam"].get(), 
                           W = self.input["Wver"].get(), 
                           n = self.input["n"].get())
+        print(f"qhor: {self.qhor}, qver: {self.qver}")
 
     def calculate_beamshape(self):
         # Calculate the beam shape at the end of the optical line
         if debug:
             print(f"Calculating beam shape with {self.samples.get()} samples")
         
-        self.calcq()
+        # Calculate qhor and qver
+        self.calcqs()
 
         if self.plotoptions["hor"]["plot"].get():
             if debug: print("Constructing Horizontal")
-            # Calculate the fundamental mode waist:
-            whor = cavityq(self.horABCD)
+            # Calculate the fundamental mode waists:
             self.horline = BeamTrace(self.matrices_hor, 
                                      self.qhor,
                                      n_points = self.samples.get(), 
@@ -315,7 +315,6 @@ class GUI_OptLineProto:
             self.horline.constructRey()
         if self.plotoptions["ver"]["plot"].get():
             if debug: print("Constructing Vertical")
-            wver = cavityq(self.verABCD)
             self.verline = BeamTrace(self.matrices_ver, 
                                         self.qver,
                                         n_points = self.samples.get(), 
@@ -323,31 +322,36 @@ class GUI_OptLineProto:
             self.verline.constructRey()
         if debug:
             print("Beam shape calculated")
-        #self.zrhor = rey.z_r(self.whor, self.input["lam"].get())
-        #self.zrver = rey.z_r(self.wver, self.input["lam"].get())
+    
+    def buildMatrixList(self):
+        # Fetch the ABCD matrices from the components and build the matrix list
+        self.matrices_hor = []
+        self.matrices_ver = []
+        for param in self.parameters:
+            hor, ver = param.calc_ABCD()
+            self.matrices_hor.append(hor)
+            self.matrices_ver.append(ver)
+        if debug:
+            print(self.matrices_hor)
+            print(self.matrices_ver)
 
     def replot(self, n = 1000):
         self.samples.set(n)
-        self.matrices = ringCavity(l_focus = self.input["l_focus"].get(), # Distance between curved focus mirrors
-                                   l_free = self.input["l_free"].get(), # Free arm length (l_cav-l_focus)
-                                   l_crystal = self.input["l_crystal"].get(), # SHG crystal length
-                                   R = self.input["R_foc"].get(), # Curvature radius of curved mirrors
-                                   n_crystal = self.input["n_SHG"].get(), # Refractive index of SHG crystal
-                                   theta = radians(self.input["θ (deg)"].get())) # Angle of incidence on curved mirrors
-        self.matrices_hor = buildMatrixList(self.matrices["hor"])
-        self.matrices_ver = buildMatrixList(self.matrices["ver"])
-        self.horABCD = compositeABCD(self.matrices_hor)
-        self.verABCD = compositeABCD(self.matrices_ver)
-
+        self.buildMatrixList()
         self.calculate_beamshape()
         self.plotdata = {}
+        if "x_offset" in self.input:
+            offset = self.input["x_offset"].get()
+        else:
+            offset = 0
         if self.hor.get():
             self.plotdata["hor"] = {}
-            self.plotdata["hor"]["x"] = self.horline.xs + self.input["x_offset"].get()
+            # Check whether the x_offset parameter exists in current input
+            self.plotdata["hor"]["x"] = self.horline.xs + offset
             self.plotdata["hor"]["w"] = self.horline.ws
         if self.ver.get():
             self.plotdata["ver"] = {}
-            self.plotdata["ver"]["x"] = self.verline.xs + self.input["x_offset"].get()
+            self.plotdata["ver"]["x"] = self.verline.xs + offset
             self.plotdata["ver"]["w"] = self.verline.ws
         if debug: print(f"plotdata keys: {self.plotdata.keys()}")
         if debug: print(f"plotdata: {self.plotdata}")

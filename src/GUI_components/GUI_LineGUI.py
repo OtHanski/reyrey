@@ -4,11 +4,11 @@ from tkinter import ttk
 
 from .raycalc.matrices import matrixdicts
 from .GUI_OpticalLine import OpticalLine
-from .GUI_cavities import RibbonCavity, RibbonCavity2
+from .GUI_cavities import RibbonCavity
 
 debug = False
 
-opticalitems = {"Optical Line": OpticalLine, "Ring Cavity": RibbonCavity, "Rib2": RibbonCavity2}
+opticalitems = {"Optical Line": OpticalLine, "Ring Cavity": RibbonCavity}
 
 class LineItem:
     """tkinter widget for a single line parameter"""

@@ -6,51 +6,68 @@ from tkinter import colorchooser
 class PlotOptions:
     # Init either in given parentframe or if not given, new top level window
     def __init__(self, parent=None, plotoptions: dict = None):
-        if parent is None:
-            self.root = tk.Toplevel()
-        else:
-            self.root = parent
+        self.root = tk.Toplevel()
+        self.root.geometry("250x150")
         self.root.title("Plot Options")
+        self.root.attributes("-topmost", True)
+
+        self.parent = parent
     
         if plotoptions is not None:
             self.plotoptions = plotoptions
         else:
             self.plotoptions = {
-                "color": "red"
-            }
-
+                    "hor": {"color": "red"},
+                    "ver": {"color": "blue"}
+                }
+        self.root.rowconfigure(0, weight=1)
+        self.root.columnconfigure(0, weight=1)
         self.frame = tk.Frame(self.root)
-        self.frame.grid(row=0, column=0)
+        self.frame.grid(row=0, column=0, sticky="nsew")
         self.frame.columnconfigure(0, weight=1)
         self.frame.columnconfigure(1, weight=1)
         self.frame.rowconfigure(0, weight=1)
         self.frame.rowconfigure(1, weight=1)
+        self.frame.rowconfigure(2, weight=1)
+
         ### COLOR PICKER ###
+        self.colorframes = {"hor": None, "ver": None}
         # Square with current color
-        self.colorframe = tk.Frame(self.frame)
-        self.colorframe.grid(row=0, column=0, padx=5, pady=5)
-        self.colorframe.config(width=25, height=25)
-        self.colorframe.config(background=self.plotoptions["color"])
+        self.colorframes["hor"] = tk.Frame(self.frame)
+        self.colorframes["hor"].grid(row=0, column=0, padx=5, pady=5)
+        self.colorframes["hor"].config(width=25, height=25)
+        self.colorframes["hor"].config(background=self.plotoptions["hor"]["color"])
         # Button to open color picker
-        self.colorbutton = ttk.Button(self.frame, text="Plot color", command=self.choose_color)
-        self.colorbutton.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
+        self.horcolorbutton = ttk.Button(self.frame, text="Hor color", command= lambda: self.choose_color("hor"))
+        self.horcolorbutton.grid(row=0, column=1, padx=5, pady=5)
+
+        # Same with vertical
+        self.colorframes["ver"] = tk.Frame(self.frame)
+        self.colorframes["ver"].grid(row=1, column=0, padx=5, pady=5)
+        self.colorframes["ver"].config(width=25, height=25)
+        self.colorframes["ver"].config(background=self.plotoptions["ver"]["color"])
+        # Button to open color picker
+        self.horcolorbutton = ttk.Button(self.frame, text="Ver color", command=lambda: self.choose_color("ver"))
+        self.horcolorbutton.grid(row=1, column=1, padx=5, pady=5)
 
         ### OK and Cancel
         self.okbutton = ttk.Button(self.frame, text="OK", command=self.on_closing)
-        self.okbutton.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
+        self.okbutton.grid(row=2, column=0, padx=5, pady=5)
         self.cancelbutton = ttk.Button(self.frame, text="Cancel", command=self.cancel)
 
-    def choose_color(self):
+    def choose_color(self, horver):
         color_code = colorchooser.askcolor(title="Choose color")
         if color_code:
-            self.plotoptions["color"] = color_code[1]
-            self.colorframe.config(background=color_code[1])
+            self.plotoptions[horver]["color"] = color_code[1]
+            self.colorframes[horver].config(background=color_code[1])
     
     def cancel(self):
         self.plotoptions = None
         self.on_closing()
 
     def on_closing(self):
+        if hasattr(self.parent, "setplotoptions"):
+            self.parent.setplotoptions(self.plotoptions)
         self.root.destroy()
 
 

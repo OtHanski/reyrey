@@ -10,9 +10,11 @@ from tkinter import ttk
 if __name__ == "__main__":
     from raycalc.matrices import matrixdicts, GUI_matrix
     from raycalc.matrixcalc import BeamTrace, calcq
+    from GUI_plotoptions import PlotOptions
 else:
     from .raycalc.matrices import matrixdicts, GUI_matrix
     from .raycalc.matrixcalc import BeamTrace, calcq
+    from .GUI_plotoptions import PlotOptions
 
 debug = False
 
@@ -166,12 +168,14 @@ class GUI_OptLineProto:
 
         self.parent = parent
         self.id = id
-        self.frame = ttk.LabelFrame(parentframe, text = "Controls")#, relief=tk.RIDGE)
+        self.frame = ttk.LabelFrame(parentframe, text = "Controls")
         self.frame.grid(row=location[0], column=location[1], pady=5, sticky="news")
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
         self.frame.rowconfigure(1, weight=1)
 
+        ### PLOT OPTIONS ###
+        self.PlotOptWindow = None
         self.plotoptions = {
             "hor": {"color": "red"},
             "ver": {"color": "blue"}
@@ -219,8 +223,8 @@ class GUI_OptLineProto:
         self.hor = self.plotoptions["hor"]["plot"]
         self.ver = self.plotoptions["ver"]["plot"]
 
-        # Replot button
-        self.replot_button = ttk.Button(self.button_frame, text="Replot", command=self.replot)
+        # Plot config button
+        self.replot_button = ttk.Button(self.button_frame, text="Plot config", command=self.plotconfig)
         self.replot_button.grid(row=1, column=2, padx=5)
         ### END BUTTON FRAME ###
 
@@ -356,6 +360,15 @@ class GUI_OptLineProto:
         if debug: print(f"plotdata keys: {self.plotdata.keys()}")
         if debug: print(f"plotdata: {self.plotdata}")
         return self.plotdata
+
+    def plotconfig(self):
+        if self.PlotOptWindow is None:
+            self.PlotOptWindow = PlotOptions(parent = self, plotoptions = self.plotoptions)
+        else:
+            self.PlotOptWindow.root.lift()
+    
+    def setplotoptions(self, plotoptions):
+        print(self.plotoptions)
     
     def savestate(self):
         state = {}

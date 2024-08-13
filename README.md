@@ -28,11 +28,24 @@ The program is a GUI interface for designing optical beamlines for reshaping of 
 
 In the `savestates/samples` folder there are example setups for playing around.
 
-Note that if cavity parameters are unstable, currently the cavity calculations simply fail and produce null output (no plot). To get a stable cavity to start optimizing parameters from one can use as an initial guess `l_focus = l_free = 1.2 * R_focus` and `theta = 10 deg`.
+Note that if cavity parameters are unstable, currently the cavity calculations simply fail and produce null output (no plot). To get a stable cavity to start optimizing parameters from one can use as an initial guess: 
+
+`l_focus = l_free = 1.2 * R_focus` and `theta = 10 deg`.
 
 Explanation of the UI:
 
 TODO
+
+##
+
+Structure of project:
+
+- `main.py` is responsible for running the main program loop
+- GUI components are located in the aptly named `GUI_components` folder. 
+- `GUI_LineGUI.py` imports different types of optical line components and arranges them inside the main window
+- `GUI_OptLineProto.py` defines the prototype class for optical lines. Use this as base if you want to build a new type of optical system.
+- Specific optical systems should be defined in their own files, e.g. `GUI_OpticalLine.py` and `GUI_cavities.py` implementing free optical beamlines and ribbon & linear optical cavities, respectively.
+- Ray transfer calculation code is in the `GUI_components/raycalc` folder. If one wishes to implement new types of optical components for optical beams, they should be added to `matrices.py`.
 
 ## Credit
 

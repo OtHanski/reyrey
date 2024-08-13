@@ -2,7 +2,7 @@ from copy import deepcopy
 import tkinter as tk
 from tkinter import ttk
 
-from .raytracing.matrices import matrixdicts
+from .raycalc.matrices import matrixdicts
 from .GUI_OpticalLine import OpticalLine
 from .GUI_cavities import RibbonCavity, RibbonCavity2
 

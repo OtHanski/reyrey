@@ -1,5 +1,5 @@
-import GUI_components.raytracing.matrixcalc as rey
-import GUI_components.raytracing.matrices as mat
+import GUI_components.raycalc.matrixcalc as rey
+import GUI_components.raycalc.matrices as mat
 import matplotlib.pyplot as plt
 from numpy import argmin
 

@@ -9,11 +9,11 @@ from math import radians
 # Import the GUI component prototypes and init functions 
 # format depends on whether this is run as a script or imported as a module
 if __name__ == "__main__":
-    from raytracing.matrices import matrixdicts, GUI_matrix, ringCavity, linCavity
-    from raytracing.matrixcalc import BeamTrace, calcq, cavityq, buildMatrixList, compositeABCD
+    from raycalc.matrices import matrixdicts, GUI_matrix, ringCavity, linCavity
+    from raycalc.matrixcalc import BeamTrace, calcq, cavityq, buildMatrixList, compositeABCD
 else:
-    from .raytracing.matrices import matrixdicts, GUI_matrix, ringCavity, linCavity
-    from .raytracing.matrixcalc import BeamTrace, calcq, cavityq, buildMatrixList, compositeABCD
+    from .raycalc.matrices import matrixdicts, GUI_matrix, ringCavity, linCavity
+    from .raycalc.matrixcalc import BeamTrace, calcq, cavityq, buildMatrixList, compositeABCD
 
 debug = False
 

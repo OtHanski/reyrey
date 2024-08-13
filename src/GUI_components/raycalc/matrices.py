@@ -1,23 +1,6 @@
 from numpy import inf,array
 from math import radians, cos, sin
 
-def GUI_matrix(params: dict):
-    """Return the matrix for the GUI element"""
-    func = params["func"]
-    match func:
-        case "free":
-            return free(l = params["l"])
-        case "thinlens":
-            return thinlens(f = params["f"])
-        case "curvedmirror":
-            return curvedmirrorhor(R = params["R"], theta = params["θ"])
-        case "thicklens":
-            return thicklens()
-        case "flatrefraction":
-            return flatrefraction(n1 = params["n1"], n2 = params["n2"])
-        case _:
-            return identity()
-
 def identity():
     """Identity matrix"""
     return array([[1,0],
@@ -167,3 +150,72 @@ matrixdicts = {
              "horver": False
             },
     }
+
+# Remember to keep parameters in correct order for the funcs.
+matrixdicts = {
+    "free": {"func": free,
+             "params": ["l"],
+             "label": "Free space",
+             "horver": False
+            },
+    "thinlens": {"func": thinlens,
+             "params": ["f"],
+             "label": "Thin lens",
+             "horver": True
+            },
+    "curvedmirror": {"func": {"hor": curvedmirrorhor, "ver": curvedmirrorver},
+             "params": ["R", "θ"],
+             "label": "Curved mirror",
+             "horver": True
+            },
+    "thicklens": {"func": thicklens,
+             "params": [],
+             "label": "Thick lens (not implemented)",
+             "horver": True
+            },
+    "flatrefraction": {"func": flatrefraction,
+             "params": ["n1", "n2"],
+             "label": "Flat refraction",
+             "horver": False
+            },
+    }
+
+def GUI_matrix(params: dict):
+    """Return the hor/ver matrices for the GUI element"""
+    func = params["func"]
+    match func:
+        case "free":
+            mat = {"hor": free(l = params["l"]), "ver": free(l = params["l"])}
+            if not params["hor"]:
+                mat["hor"] = identity()
+            if not params["ver"]:
+                mat["ver"] = identity()
+        case "thinlens":
+            mat = {"hor": thinlens(f = params["f"]), "ver": thinlens(f = params["f"])}
+            if not params["hor"]:
+                mat["hor"] = identity()
+            if not params["ver"]:
+                mat["ver"] = identity()
+        case "curvedmirror":
+            mat = {"hor": curvedmirrorhor(R = params["R"], theta = params["θ"]), 
+                   "ver": curvedmirrorver(R = params["R"], theta = params["θ"])}
+            if not params["hor"]:
+                mat["hor"] = identity()
+            if not params["ver"]:
+                mat["ver"] = identity()
+        case "thicklens":
+            mat = {"hor": thicklens(), "ver": thicklens()}
+            if not params["hor"]:
+                mat["hor"] = identity()
+            if not params["ver"]:
+                mat["ver"] = identity()
+        case "flatrefraction":
+            mat = {"hor": flatrefraction(n1 = params["n1"], n2 = params["n2"]), 
+                   "ver": flatrefraction(n1 = params["n1"], n2 = params["n2"])}
+            if not params["hor"]:
+                mat["hor"] = identity()
+            if not params["ver"]:
+                mat["ver"] = identity()
+        case _:
+            mat = {"hor": identity(), "ver": identity()}
+    return mat

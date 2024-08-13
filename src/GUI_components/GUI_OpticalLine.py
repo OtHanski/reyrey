@@ -5,11 +5,11 @@ from tkinter import ttk
 # Import the GUI component prototypes and init functions 
 # format depends on whether this is run as a script or imported as a module
 if __name__ == "__main__":
-    from raytracing.matrices import matrixdicts, GUI_matrix, ringCavity, linCavity
-    from raytracing.matrixcalc import BeamTrace, calcq, cavityq, buildMatrixList, compositeABCD
+    from raycalc.matrices import matrixdicts, GUI_matrix, ringCavity, linCavity
+    from raycalc.matrixcalc import BeamTrace, calcq, cavityq, buildMatrixList, compositeABCD
 else:
-    from .raytracing.matrices import matrixdicts, GUI_matrix, ringCavity, linCavity
-    from .raytracing.matrixcalc import BeamTrace, calcq, cavityq, buildMatrixList, compositeABCD
+    from .raycalc.matrices import matrixdicts, GUI_matrix, ringCavity, linCavity
+    from .raycalc.matrixcalc import BeamTrace, calcq, cavityq, buildMatrixList, compositeABCD
 
 debug = False
 
@@ -102,17 +102,13 @@ class LineParameter:
             param = self.fields[key]["label"]["text"]
             matrixparams[param] = self.fields[key]["val"].get()
 
+        matrixparams["hor"] = self.hor.get()
+        matrixparams["ver"] = self.ver.get()
+
         try:
-            if self.hor.get():
-                self.ABCDhor = GUI_matrix(matrixparams)
-            else:
-                # If the component doesn't support horizontal, set ABCDhor to identity matrix
-                self.ABCDhor = GUI_matrix({"func": "identity"})
-            if self.ver.get():
-                self.ABCDver = GUI_matrix(matrixparams)
-            else:
-                # If the component doesn't support vertical, set ABCDver to identity matrix
-                self.ABCDver = GUI_matrix({"func": "identity"})
+            ABCD = GUI_matrix(matrixparams)
+            self.ABCDhor = ABCD["hor"]
+            self.ABCDver = ABCD["ver"]
     
         except Exception as e:
             print("Error in calc_ABCD:",e)

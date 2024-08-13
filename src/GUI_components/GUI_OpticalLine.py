@@ -267,14 +267,14 @@ class OpticalLine:
         if self.hor.get():
             if debug: print("Constructing Horizontal")
             self.horline = BeamTrace(self.matrices_hor, 
-                                     calcq(Z = self.input["Zhor"].get(), lam = self.input["lam"].get(), W = self.input["Whor"].get(), n = self.input["n"].get()),
+                                     calcq(Z = self.input["Zhor"].get(), ZR = self.input["ZRhor"].get(), lam = self.input["lam"].get(), W = self.input["Whor"].get(), n = self.input["n"].get()),
                                      n_points = self.samples.get(), 
                                      lda = self.input["lam"].get())
             self.horline.constructRey()
         if self.ver.get():
             if debug: print("Constructing Vertical")
             self.verline = BeamTrace(self.matrices_ver, 
-                                        calcq(Z = self.input["Zver"].get(), lam = self.input["lam"].get(), W = self.input["Wver"].get(), n = self.input["n"].get()),
+                                        calcq(Z = self.input["Zver"].get(), ZR = self.input["ZRver"].get(), lam = self.input["lam"].get(), W = self.input["Wver"].get(), n = self.input["n"].get()),
                                         n_points = self.samples.get(), 
                                         lda = self.input["lam"].get())
             self.verline.constructRey()

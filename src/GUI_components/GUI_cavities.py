@@ -7,15 +7,46 @@ from math import radians
 if __name__ == "__main__":
     from raytracing.matrices import ringCavity, linCavity
     from raytracing.matrixcalc import BeamTrace, calcq, cavityq, buildMatrixList, compositeABCD
+    from GUI_OptLineProto import GUI_OptLineProto
 else:
     from .raytracing.matrices import ringCavity, linCavity
     from .raytracing.matrixcalc import BeamTrace, calcq, cavityq, buildMatrixList, compositeABCD
+    from .GUI_OptLineProto import GUI_OptLineProto
 
 debug = False
 
+class RibbonCavity2(GUI_OptLineProto):
+    def __init__(self, parent, parentframe,  id = 0, location = (0,0)):
+        self.input = {"lam": tk.DoubleVar(value = 972E-9), # Wavelength
+                      "l_focus": tk.DoubleVar(value=61.6E-3), # Distance from waist
+                      "l_free": tk.DoubleVar(value=69.3E-3), # Distance from waist
+                      "l_crystal": tk.DoubleVar(value=15E-3), # Rayleigh length
+                      "R_foc": tk.DoubleVar(value=50E-3), # Rayleigh length
+                      "n_SHG": tk.DoubleVar(value=1.567), # Refractive index of SHG crystal
+                      "θ (deg)": tk.DoubleVar(value=10), # R mirror Incidence angle
+                      #"h": tk.DoubleVar(value=972E-9), # Cavity height
+                      "x_offset": tk.DoubleVar(value=0)} # Refractive index
+        super().__init__(parent, parentframe, id, location, inputDict=self.input)
+        self.add_button.destroy()
+
+    def showhide(self):
+        # Override default behaviour to show/hide the inputframe instead of lineparams
+        if self.inputframe.winfo_ismapped():
+            self.inputframe.grid_remove()
+        else:
+            self.inputframe.grid()
+    
+    def calcq(self):
+        # Override default q calculation, based on the cavityq function
+        whor = cavityq(self.horABCD)
+        wver = cavityq(self.verABCD)
+
+        self.qhor = whor*1j
+        self.qver = wver*1j
+
 class RibbonCavity:
     """tkinter widget for a single optical line"""
-    def __init__(self, parent, parentframe,  id = 0, location = (0,0), updateFlag = None):
+    def __init__(self, parent, parentframe,  id = 0, location = (0,0)):
         self.parent = parent
         self.id = id
         self.frame = ttk.LabelFrame(parentframe, text = "Controls")#, relief=tk.RIDGE)
@@ -24,17 +55,20 @@ class RibbonCavity:
         self.frame.rowconfigure(0, weight=1)
         self.frame.rowconfigure(1, weight=1)
 
+        self.plotoptions = {
+            "hor": {"color": "red"},
+            "ver": {"color": "blue"}
+        }
+
         if hasattr(parent, "linesamples"):
             self.samples = parent.linesamples
         else: 
             self.samples = tk.IntVar(value=100)
-        
-        # Update flag should be a tk.IntVar toggle to tag the plot for update.
-        if updateFlag:
-            self.updateFlag = updateFlag
-        else:
-            self.updateFlag = tk.IntVar(value=0)
 
+        if hasattr(parent, "givecolor"):
+            colors = parent.givecolor(n = 2)
+            self.plotoptions["hor"]["color"] = colors[0]
+            self.plotoptions["ver"]["color"] = colors[1]
 
         ### BUTTON FRAME ###
         self.button_frame = ttk.Frame(self.frame)
@@ -57,11 +91,11 @@ class RibbonCavity:
         self.showhide_button.grid(row=0, column=2, padx=5)
         
         # Add ver and hor plot tickboxes
-        self.ver = tk.IntVar(value = 1)
-        self.ver_check = ttk.Checkbutton(self.button_frame, text="Vertical", variable=self.ver)
+        self.plotoptions["ver"]["plot"] = tk.IntVar(value = 1)
+        self.ver_check = ttk.Checkbutton(self.button_frame, text="Vertical", variable=self.plotoptions["ver"]["plot"])
         self.ver_check.grid(row=1, column=0, padx=5)
-        self.hor = tk.IntVar(value = 1)
-        self.hor_check = ttk.Checkbutton(self.button_frame, text="Horizontal", variable=self.hor)
+        self.plotoptions["hor"]["plot"] = tk.IntVar(value = 1)
+        self.hor_check = ttk.Checkbutton(self.button_frame, text="Horizontal", variable=self.plotoptions["hor"]["plot"])
         self.hor_check.grid(row=1, column=1, padx=5)
         # Replot button
         self.replot_button = ttk.Button(self.button_frame, text="Replot", command=self.replot)
@@ -69,7 +103,7 @@ class RibbonCavity:
         ### END BUTTON FRAME ###
 
         ### INPUT BEAM FRAME###
-        self.inputframe = ttk.LabelFrame(self.frame, text="Input Beam", relief=tk.RIDGE)
+        self.inputframe = ttk.LabelFrame(self.frame, text="Cavity parameters", relief=tk.RIDGE)
         self.inputframe.grid(row=1, column=0, pady=5, sticky="news")
         self.inputframe.columnconfigure(0, weight=1)
         self.inputframe.rowconfigure(0, weight=1)
@@ -129,7 +163,7 @@ class RibbonCavity:
         if debug:
             print(f"Calculating beam shape with {self.samples.get()} samples")
         
-        if self.hor.get():
+        if self.plotoptions["hor"]["plot"].get():
             if debug: print("Constructing Horizontal")
             # Calculate the fundamental mode waist:
             whor = cavityq(self.horABCD)
@@ -138,7 +172,7 @@ class RibbonCavity:
                                      n_points = self.samples.get(), 
                                      lda = self.input["lam"].get())
             self.horline.constructRey()
-        if self.ver.get():
+        if self.plotoptions["ver"]["plot"].get():
             if debug: print("Constructing Vertical")
             wver = cavityq(self.verABCD)
             self.verline = BeamTrace(self.matrices_ver, 
@@ -205,7 +239,7 @@ class RibbonCavity:
 
 class LinCavity:
     """tkinter widget for a single optical line"""
-    def __init__(self, parent, parentframe,  id = 0, location = (0,0), updateFlag = None):
+    def __init__(self, parent, parentframe,  id = 0, location = (0,0)):
         self.parent = parent
         self.id = id
         self.frame = ttk.LabelFrame(parentframe, text = "Controls")#, relief=tk.RIDGE)
@@ -218,13 +252,6 @@ class LinCavity:
             self.samples = parent.linesamples
         else: 
             self.samples = tk.IntVar(value=100)
-        
-        # Update flag should be a tk.IntVar toggle to tag the plot for update.
-        if updateFlag:
-            self.updateFlag = updateFlag
-        else:
-            self.updateFlag = tk.IntVar(value=0)
-
 
         ### BUTTON FRAME ###
         self.button_frame = ttk.Frame(self.frame)

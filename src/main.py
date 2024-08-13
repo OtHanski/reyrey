@@ -5,7 +5,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import numpy as np
 
 # Import the GUI component prototypes and init functions
-from GUI_components.GUI_lineslist import *
+from GUI_components.GUI_LineGUI import *
 
 # Import filehandler
 import utils.FileHandler as fh

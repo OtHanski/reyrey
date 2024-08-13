@@ -1,6 +1,10 @@
-from copy import deepcopy
+"""
+Define the class prototype for Optical line implements in the GUI.
+"""
+
 import tkinter as tk
 from tkinter import ttk
+from math import radians
 
 # Import the GUI component prototypes and init functions 
 # format depends on whether this is run as a script or imported as a module
@@ -154,10 +158,17 @@ class LineParameter:
             self.fields[key]["val"].set(state["fields"][str(key)])
             print(self.fields[key]["val"].get())
 
+class GUI_OptLineProto:
+    """tkinter widget prototype for Optical Line style elements"""
+    def __init__(self, parent, parentframe,  id = 0, location = (0,0), inputDict = None):
+        """Initialise the Optical Line widget
+        parent: parent widget
+        parentframe: parent frame to place the widget in
+        id: id of the widget
+        location: grid location of the widget
+        inputDict: dictionary of input parameters for the optical line, format: {"param": tk.DoubleVar(value = 0)}
+        """
 
-class OpticalLine:
-    """tkinter widget for a single optical line"""
-    def __init__(self, parent, parentframe,  id = 0, location = (0,0)):
         self.parent = parent
         self.id = id
         self.frame = ttk.LabelFrame(parentframe, text = "Controls")#, relief=tk.RIDGE)
@@ -166,10 +177,21 @@ class OpticalLine:
         self.frame.rowconfigure(0, weight=1)
         self.frame.rowconfigure(1, weight=1)
 
+        self.plotoptions = {
+            "hor": {"color": "red"},
+            "ver": {"color": "blue"}
+        }
+
         if hasattr(parent, "linesamples"):
             self.samples = parent.linesamples
         else: 
             self.samples = tk.IntVar(value=100)
+
+        if hasattr(parent, "givecolor"):
+            colors = parent.givecolor(n = 2)
+            self.plotoptions["hor"]["color"] = colors[0]
+            self.plotoptions["ver"]["color"] = colors[1]
+
 
         ### BUTTON FRAME ###
         self.button_frame = ttk.Frame(self.frame)
@@ -192,32 +214,36 @@ class OpticalLine:
         self.showhide_button.grid(row=0, column=2, padx=5)
         
         # Add ver and hor plot tickboxes
-        self.ver = tk.IntVar(value = 1)
-        self.ver_check = ttk.Checkbutton(self.button_frame, text="Vertical", variable=self.ver)
+        self.plotoptions["ver"]["plot"] = tk.IntVar(value = 1)
+        self.ver_check = ttk.Checkbutton(self.button_frame, text="Vertical", variable=self.plotoptions["ver"]["plot"])
         self.ver_check.grid(row=1, column=0, padx=5)
-        self.hor = tk.IntVar(value = 1)
-        self.hor_check = ttk.Checkbutton(self.button_frame, text="Horizontal", variable=self.hor)
+        self.plotoptions["hor"]["plot"] = tk.IntVar(value = 1)
+        self.hor_check = ttk.Checkbutton(self.button_frame, text="Horizontal", variable=self.plotoptions["hor"]["plot"])
         self.hor_check.grid(row=1, column=1, padx=5)
         # Replot button
-        self.replot_button = ttk.Button(self.button_frame, text="Update", command=self.replot)
+        self.replot_button = ttk.Button(self.button_frame, text="Replot", command=self.replot)
         self.replot_button.grid(row=1, column=2, padx=5)
         ### END BUTTON FRAME ###
 
         ### INPUT BEAM FRAME###
-        self.inputframe = ttk.LabelFrame(self.frame, text="Input Beam", relief=tk.RIDGE)
+        self.inputframe = ttk.LabelFrame(self.frame, text="Cavity parameters", relief=tk.RIDGE)
         self.inputframe.grid(row=1, column=0, pady=5, sticky="news")
         self.inputframe.columnconfigure(0, weight=1)
         self.inputframe.rowconfigure(0, weight=1)
 
-        # (Z = 0, ZR = 0, lam = 0, W = 0, n = 1)
-        self.input = {"Zhor": tk.DoubleVar(value=0), # Distance from waist
-                      "Zver": tk.DoubleVar(value=0), # Distance from waist
-                      "ZRhor": tk.DoubleVar(value=0), # Rayleigh length
-                      "ZRver": tk.DoubleVar(value=0), # Rayleigh length
-                      "Whor": tk.DoubleVar(value=1E-3), # Beam waist
-                      "Wver": tk.DoubleVar(value=1E-3), # Beam waist
-                      "lam": tk.DoubleVar(value=972E-9), # Wavelength
-                      "n": tk.DoubleVar(value=1)} # Refractive index
+        if inputDict is None:
+            # Default to open beamline
+            # l_focus = 61.6E-3, l_free = 69.3E-3, l_crystal = 15E-3, R = 50E-3, n_crystal = 1.567, theta = radians(18.2)
+            self.input = {"Zhor": tk.DoubleVar(value=0), # Distance from waist
+                          "Zver": tk.DoubleVar(value=0), # Distance from waist
+                          "ZRhor": tk.DoubleVar(value=0), # Rayleigh length
+                          "ZRver": tk.DoubleVar(value=0), # Rayleigh length
+                          "Whor": tk.DoubleVar(value=1E-3), # Beam waist
+                          "Wver": tk.DoubleVar(value=1E-3), # Beam waist
+                          "lam": tk.DoubleVar(value=972E-9), # Wavelength
+                          "n": tk.DoubleVar(value=1)} # Refractive index
+        else:
+            self.input = inputDict
         self.input_widgets = {}
         i = 0
         for key in self.input:
@@ -237,6 +263,7 @@ class OpticalLine:
         self.parameters = []
         ### END COMPONENT FRAME ###
 
+
     def add_parameter(self):
         id = len(self.parameters)
         new_parameter = LineParameter(self, self.componentframe, id)
@@ -252,28 +279,45 @@ class OpticalLine:
             param.id = i
     
     def showhide(self):
-        # Show or hide the optical line
+        # Show or hide the optical line components
         if self.componentframe.winfo_ismapped():
             self.componentframe.grid_remove()
         else:
             self.componentframe.grid()
+
+    def calcq(self):
+        self.qhor = calcq(Z = self.input["Zhor"].get(), 
+                          ZR = self.input["ZRhor"].get(), 
+                          lam = self.input["lam"].get(), 
+                          W = self.input["Whor"].get(), 
+                          n = self.input["n"].get())
+        self.qver = calcq(Z = self.input["Zver"].get(), 
+                          ZR = self.input["ZRver"].get(), 
+                          lam = self.input["lam"].get(), 
+                          W = self.input["Wver"].get(), 
+                          n = self.input["n"].get())
 
     def calculate_beamshape(self):
         # Calculate the beam shape at the end of the optical line
         if debug:
             print(f"Calculating beam shape with {self.samples.get()} samples")
         
-        if self.hor.get():
+        self.calcq()
+
+        if self.plotoptions["hor"]["plot"].get():
             if debug: print("Constructing Horizontal")
+            # Calculate the fundamental mode waist:
+            whor = cavityq(self.horABCD)
             self.horline = BeamTrace(self.matrices_hor, 
-                                     calcq(Z = self.input["Zhor"].get(), ZR = self.input["ZRhor"].get(), lam = self.input["lam"].get(), W = self.input["Whor"].get(), n = self.input["n"].get()),
+                                     self.qhor,
                                      n_points = self.samples.get(), 
                                      lda = self.input["lam"].get())
             self.horline.constructRey()
-        if self.ver.get():
+        if self.plotoptions["ver"]["plot"].get():
             if debug: print("Constructing Vertical")
+            wver = cavityq(self.verABCD)
             self.verline = BeamTrace(self.matrices_ver, 
-                                        calcq(Z = self.input["Zver"].get(), ZR = self.input["ZRver"].get(), lam = self.input["lam"].get(), W = self.input["Wver"].get(), n = self.input["n"].get()),
+                                        self.qver,
                                         n_points = self.samples.get(), 
                                         lda = self.input["lam"].get())
             self.verline.constructRey()
@@ -284,29 +328,29 @@ class OpticalLine:
 
     def replot(self, n = 1000):
         self.samples.set(n)
-        self.matrices_hor = []
-        self.matrices_ver = []
-        for param in self.parameters:
-            hor, ver = param.calc_ABCD()
-            self.matrices_hor.append(hor)
-            self.matrices_ver.append(ver)
-        if debug:
-            print(self.matrices_hor)
-            print(self.matrices_ver)
+        self.matrices = ringCavity(l_focus = self.input["l_focus"].get(), # Distance between curved focus mirrors
+                                   l_free = self.input["l_free"].get(), # Free arm length (l_cav-l_focus)
+                                   l_crystal = self.input["l_crystal"].get(), # SHG crystal length
+                                   R = self.input["R_foc"].get(), # Curvature radius of curved mirrors
+                                   n_crystal = self.input["n_SHG"].get(), # Refractive index of SHG crystal
+                                   theta = radians(self.input["θ (deg)"].get())) # Angle of incidence on curved mirrors
+        self.matrices_hor = buildMatrixList(self.matrices["hor"])
+        self.matrices_ver = buildMatrixList(self.matrices["ver"])
+        self.horABCD = compositeABCD(self.matrices_hor)
+        self.verABCD = compositeABCD(self.matrices_ver)
 
-        #self.matrices_hor.reverse()
-        #self.matrices_ver.reverse()
         self.calculate_beamshape()
         self.plotdata = {}
         if self.hor.get():
             self.plotdata["hor"] = {}
-            self.plotdata["hor"]["x"] = self.horline.xs
+            self.plotdata["hor"]["x"] = self.horline.xs + self.input["x_offset"].get()
             self.plotdata["hor"]["w"] = self.horline.ws
         if self.ver.get():
             self.plotdata["ver"] = {}
-            self.plotdata["ver"]["x"] = self.verline.xs
+            self.plotdata["ver"]["x"] = self.verline.xs + self.input["x_offset"].get()
             self.plotdata["ver"]["w"] = self.verline.ws
         if debug: print(f"plotdata keys: {self.plotdata.keys()}")
+        if debug: print(f"plotdata: {self.plotdata}")
         return self.plotdata
     
     def savestate(self):
@@ -333,16 +377,3 @@ class OpticalLine:
         for param in state["parameters"]:
             self.add_parameter()
             self.parameters[-1].loadstate(param)
-
-def test():
-    root = tk.Tk()
-    root.title("Optical Line Test")
-    tk.Grid.rowconfigure(root, 0, weight=1)
-    tk.Grid.columnconfigure(root, 0, weight=1)
-    optical_line = OpticalLine(root)
-    root.mainloop()
-
-if __name__ == "__main__":
-    test()
-    
-    

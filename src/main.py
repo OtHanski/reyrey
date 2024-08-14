@@ -1,3 +1,5 @@
+"""Main application for optical line simulation tool"""
+
 import tkinter as tk
 from tkinter import ttk
 import matplotlib.pyplot as plt
@@ -5,27 +7,28 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import numpy as np
 
 # Import the GUI component prototypes and init functions
-from GUI_components.GUI_LineGUI import *
+from GUI_components.GUI_LineGUI import LineGUI # pylint: disable=import-error
 
 # Import filehandler
-import utils.FileHandler as fh
+import utils.FileHandler as fh # pylint: disable=import-error
 
-debug = False
+DEBUG = False
 
 class App:
-    def __init__(self, root):
-        self.root = root
+    """Main application class for optical line simulation"""
+    def __init__(self, rootwindow):
+        self.root = rootwindow
         self.root.title("Tkinter with Matplotlib")
 
         # Bind the window close event
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # Create a main frame
-        self.main_frame = ttk.Frame(root)
+        self.main_frame = ttk.Frame(self.root)
         self.main_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
 
         # Create a sidebar frame
-        self.sidebar = ttk.Frame(root, width=200)
+        self.sidebar = ttk.Frame(self.root, width=200)
         self.sidebar.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Frame to hold the add and remove buttons
@@ -50,17 +53,19 @@ class App:
 
         # Scrollable canvas for parameters
         self.paramcanvas = tk.Canvas(self.sidebar, borderwidth=0)
-        self.scrollbar = ttk.Scrollbar(self.sidebar, orient="vertical", command=self.paramcanvas.yview)
+        self.scrollbar = ttk.Scrollbar(self.sidebar,
+                                       orient="vertical",
+                                       command=self.paramcanvas.yview)
         self.parameters_frame = ttk.Frame(self.paramcanvas)
         self.parameters_frame.bind("<Configure>", self.on_frame_configure)
         self.paramcanvas.create_window((0, 0), window=self.parameters_frame, anchor="nw")
         self.paramcanvas.configure(yscrollcommand=self.scrollbar.set)
-        
+
         self.paramcanvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
 
         # Add the lineslist element to hold the actual optical lines
-        self.lineslist = LineGUI(self, self.parameters_frame, id = 0)
+        self.lineslist = LineGUI(self, self.parameters_frame, compid = 0)
 
         # List to hold parameter entries
         self.parameters = []
@@ -82,30 +87,32 @@ class App:
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
     def update_plot(self):
+        """Replot the optical lines"""
         # Clear the current plot
         for line in self.ax.get_lines():
             line.remove()
         # Create/reset an object to hold the lines
         self.lines = []
         xydat = self.lineslist.replot()
-        print(f"Keys in xydat: {xydat[0].keys()}")
-        if debug:
+        if DEBUG:
             print(f"xydat keys: {xydat.keys()}")
             print(f"xydat values: {xydat[0]}")
         # Decide which ones to plot
         plots = []
-        if self.hor.get(): plots.append("hor")
-        if self.ver.get(): plots.append("ver")
+        if self.hor.get():
+            plots.append("hor")
+        if self.ver.get():
+            plots.append("ver")
         for optline in xydat:
             # Plot vertical and/or horizontal as provided
             for horver in plots:
                 if horver in xydat[optline]:
-                    line = self.ax.plot(np.array(xydat[optline][horver]["x"]), 
-                                        np.array(xydat[optline][horver]["w"])*1E3, 
+                    line = self.ax.plot(np.array(xydat[optline][horver]["x"]),
+                                        np.array(xydat[optline][horver]["w"])*1E3,
                                         label = xydat[optline]["plotoptions"][horver]["title"],
                                         color = xydat[optline]["plotoptions"][horver]["color"])
                     self.lines.append(line)
-        
+
         # Add legend to the legend frame
         self.ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.13),
           ncol=3, fancybox=True, shadow=True)
@@ -115,25 +122,28 @@ class App:
         self.ax.autoscale_view()
         self.canvas.draw()
 
-    def on_frame_configure(self, event):
+    def on_frame_configure(self, event): # pylint: disable=unused-argument
+        """Reset the scroll region to encompass the inner frame"""
         self.paramcanvas.configure(scrollregion=self.paramcanvas.bbox("all"))
 
     def on_closing(self):
+        """Close the application"""
         # Properly close the Matplotlib figure
         plt.close(self.fig)
         self.root.destroy()
-    
+
     def savestate(self):
-        # Save the state of the GUI in dict for loading
+        """Save the state of the GUI in dict for loading"""
         state = {}
         state["horver"] = (self.hor.get(), self.ver.get())
         state["OptLines"] = self.lineslist.savestate()
-        if debug: print(state)
+        if DEBUG:
+            print(state)
 
         fh.WriteJson(fh.SaveFileAs("./savestates"), state)
-    
+
     def loadstate(self):
-        # Load the state of the GUI from a dict
+        """Load the state of the GUI from a dict"""
         state = fh.ReadJson(fh.ChooseSingleFile(initdir = "./savestates"))
         self.hor.set(state["horver"][0])
         self.ver.set(state["horver"][1])

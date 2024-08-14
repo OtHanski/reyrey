@@ -4,31 +4,30 @@ Define the class prototype for Optical line implements in the GUI.
 
 import tkinter as tk
 from tkinter import ttk
-from copy import deepcopy
 
-# Import the GUI component prototypes and init functions 
-# format depends on whether this is run as a script or imported as a module
+# Import the GUI component prototypes and init functions
+# format depends on whether this is run as a script for testing or imported as a module
 if __name__ == "__main__":
-    from raycalc.matrices import matrixdicts, GUI_matrix
-    from raycalc.matrixcalc import BeamTrace, calcq
-    from GUI_plotoptions import PlotOptions
+    from raycalc.matrices import matrixdicts, GUI_matrix # pylint: disable=import-error
+    from raycalc.matrixcalc import BeamTrace, calcq      # pylint: disable=import-error
+    from GUI_PlotOptions import PlotOptions              # pylint: disable=import-error
 else:
     from .raycalc.matrices import matrixdicts, GUI_matrix
     from .raycalc.matrixcalc import BeamTrace, calcq
-    from .GUI_plotoptions import PlotOptions
-
-debug = False
+    from .GUI_PlotOptions import PlotOptions
 
 class LineParameter:
     """tkinter widget for a single optical beamline parameter"""
-    def __init__(self, parent, parentframe: ttk.Frame, id = 0):
+    def __init__(self, parent, parentframe: ttk.Frame, compid = 0, DEBUG = False):
         self.parent = parent
-        self.id = id
+        self.compid = compid
+        self.DEBUG = DEBUG
+
         self.hor = tk.IntVar(value=1)
         self.ver = tk.IntVar(value=1)
 
-        self.frame = ttk.LabelFrame(parentframe, text=f"Component {id}", relief=tk.RIDGE)
-        self.frame.grid(row=id, column=0, pady=5, sticky="news")
+        self.frame = ttk.LabelFrame(parentframe, text=f"Component {self.compid}", relief=tk.RIDGE)
+        self.frame.grid(row=self.compid, column=0, pady=5, sticky="news")
         # Make the frame expand to fill the parent
         self.frame.columnconfigure(0, weight=1)
         self.frame.columnconfigure(1, weight=1)
@@ -42,14 +41,19 @@ class LineParameter:
         self.component.grid(row=0, column=0, padx=5)
         self.component.current(0)
 
-        self.remove_button = ttk.Button(self.frame, text="Remove", command=self.remove).grid(row=0, column=1, padx=5)
+        self.remove_button = ttk.Button(self.frame, text="Remove", command=self.remove)
+        self.remove_button.grid(row=0, column=1, padx=5)
 
         self.fields = {}
         self.horverchecks = {}
         self.init_fields()
-        
-     
+
+        self.func = matrixdicts[self.get_function()]["func"]
+        self.ABCDhor = None
+        self.ABCDver = None
+
     def init_fields(self):
+        """Initialise the default input fields for the component"""
         i = 0
         for param in matrixdicts[self.get_function()]["params"]:
             self.fields[i] = {}
@@ -59,116 +63,143 @@ class LineParameter:
             self.fields[i]["elem"] = ttk.Entry(self.frame, textvariable=self.fields[i]["val"])
             self.fields[i]["elem"].grid(row=i+1, column=1, padx=5)
             i += 1
-        
+
         horver = matrixdicts[self.get_function()]["horver"]
-        self.horverchecks["hor_check"] = ttk.Checkbutton(self.frame, text="Horizontal", variable=self.hor)
+        self.horverchecks["hor_check"] = ttk.Checkbutton(self.frame,
+                                                         text="Horizontal",
+                                                         variable=self.hor)
         self.horverchecks["hor_check"].grid(row=i+1, column=0, padx=5)
-        self.horverchecks["ver_check"] = ttk.Checkbutton(self.frame, text="Vertical", variable=self.ver)
+        self.horverchecks["ver_check"] = ttk.Checkbutton(self.frame,
+                                                         text="Vertical",
+                                                         variable=self.ver)
         self.horverchecks["ver_check"].grid(row=i+1, column=1, padx=5)
         # Remove the hor and ver checkbuttons if the component doesn't support them
         if not horver:
             self.horverchecks["hor_check"].destroy()
             self.horverchecks["ver_check"].destroy()
-    
+
     def remove_fields(self):
+        """Remove the input fields for the component"""
         # Wipe old UI elements to replace with new
-        if debug: ("Removing fields")
+        if self.DEBUG:
+            print("Removing fields")
         for i in list(self.fields):
             for key in list(self.fields[i]):
                 if type(self.fields[i][key]) in [ttk.Label, ttk.Entry, ttk.Checkbutton]:
-                    if debug: print(f"Destroying {key}")
+                    if self.DEBUG:
+                        print(f"Destroying {key}")
                     self.fields[i][key].destroy()
                 del self.fields[i][key]
-        if debug: print("Removing horverchecks")
+        if self.DEBUG:
+            print("Removing horverchecks")
         for key in list(self.horverchecks):
             if type(self.horverchecks[key]) in [ttk.Checkbutton]:
-                if debug: print(f"Destroying {key}")
+                if self.DEBUG:
+                    print(f"Destroying {key}")
                 self.horverchecks[key].destroy()
             del self.horverchecks[key]
-    
+
     def update_fields(self):
-        if debug: print("Updating fields")
+        """Update the input fields for the component upon selection of a new component type"""
+        if self.DEBUG:
+            print("Updating fields")
         self.remove_fields()
         self.init_fields()
 
 
     def remove(self):
-        self.parent.destroyLineParam(self.id)
+        """Destroy the optical line"""
+        self.parent.destroyLineParam(self.compid)
 
 
     def get_function(self):
+        """Get the current function selected in the combobox"""
         return self.component.get()
-    
-    def calc_ABCD(self):
+
+    def calc_ABCD(self): # pylint: disable=invalid-name
+        """Calculate the ABCD matrices for the component"""
         self.func = matrixdicts[self.get_function()]["func"]
 
         matrixparams = {}
         matrixparams["func"] = self.component.get()
-        for key in self.fields:
+        for key in self.fields: # pylint: disable=consider-using-dict-items
             param = self.fields[key]["label"]["text"]
             matrixparams[param] = self.fields[key]["val"].get()
 
         matrixparams["hor"] = self.hor.get()
         matrixparams["ver"] = self.ver.get()
 
+        # A bit dirty, should be redone when the matrixcalc functions are rewritten.
         try:
-            ABCD = GUI_matrix(matrixparams)
+            ABCD = GUI_matrix(matrixparams) # pylint: disable=invalid-name
             self.ABCDhor = ABCD["hor"]
             self.ABCDver = ABCD["ver"]
-    
-        except Exception as e:
+
+        except Exception as e: #pylint: disable=broad-except
             print("Error in calc_ABCD:",e)
             self.ABCDhor = None
             self.ABCDver = None
 
-        if debug:
-            print(f"Matrices in component {self.id}:\nABCDhor: {self.ABCDhor}\nABCDver: {self.ABCDver}")
+        if self.DEBUG:
+            print(f"Matrices in component {self.compid}:\n\
+                    ABCDhor: {self.ABCDhor}\n\
+                    ABCDver: {self.ABCDver}")
 
         return (self.ABCDhor, self.ABCDver)
-    
+
     def savestate(self):
+        """Save current component state in a dictionary"""
         try:
             state = {}
             state["function"] = self.component.get()
             state["hor"] = self.hor.get()
             state["ver"] = self.ver.get()
             state["fields"] = {}
-            for key in self.fields:
+            for key in self.fields: # pylint: disable=consider-using-dict-items
                 state["fields"][key] = self.fields[key]["val"].get()
             return state
-        except Exception as e:
+        except Exception as e: #pylint: disable=broad-except
             print("Error in savestate:",e)
             print("State:",state)
             print("Fields:",self.fields)
-    
+
     def loadstate(self, state):
+        """Load a component state from a dictionary"""
         self.component.set(state["function"])
         self.update_fields()
         self.hor.set(state["hor"])
         self.ver.set(state["ver"])
-        if debug: 
+        if self.DEBUG:
             print(f"Loading state: {state}")
             print(f"Fields: {self.fields}")
-        for key in self.fields:
-            if debug:
+        for key in self.fields: #pylint: disable=consider-using-dict-items
+            if self.DEBUG:
                 print(f"Setting field {key} to {state['fields'][str(key)]}")
                 print(f"Field: {self.fields[key]["val"]}")
             self.fields[key]["val"].set(state["fields"][str(key)])
             print(self.fields[key]["val"].get())
 
-class GUI_OptLineProto:
+class GUI_OptLineProto: # pylint: disable=invalid-name
     """tkinter widget prototype for Optical Line style elements"""
-    def __init__(self, parent, parentframe,  id = 0, location = (0,0), inputDict = None):
+    def __init__(self,
+                 parent,
+                 parentframe,
+                 compid = 0,
+                 location = (0,0),
+                 inputDict = None,
+                 DEBUG = False):
         """Initialise the Optical Line widget
         parent: parent widget
         parentframe: parent frame to place the widget in
-        id: id of the widget
+        compid: id of the widget
         location: grid location of the widget
-        inputDict: dictionary of input parameters for the optical line, format: {"param": tk.DoubleVar(value = 0)}
+        inputDict: dictionary of input parameters for the optical line, 
+                   format: {"param": tk.DoubleVar(value = 0)}
         """
 
         self.parent = parent
-        self.id = id
+        self.compid = compid
+        self.DEBUG = DEBUG
         self.frame = ttk.LabelFrame(parentframe, text = "Controls")
         self.frame.grid(row=location[0], column=location[1], pady=5, sticky="news")
         self.frame.columnconfigure(0, weight=1)
@@ -184,7 +215,7 @@ class GUI_OptLineProto:
 
         if hasattr(parent, "linesamples"):
             self.samples = parent.linesamples
-        else: 
+        else:
             self.samples = tk.IntVar(value=100)
 
         if hasattr(parent, "givecolor"):
@@ -207,25 +238,35 @@ class GUI_OptLineProto:
         self.namefield = ttk.Entry(self.button_frame, textvariable=self.name)
         self.namefield.grid(row=0, column=0, padx=5)
 
-        self.add_button = ttk.Button(self.button_frame, text="Add Parameter", command=self.add_parameter)
+        self.add_button = ttk.Button(self.button_frame,
+                                     text="Add Parameter",
+                                     command=self.add_parameter)
         self.add_button.grid(row=0, column=1, padx=5)
 
-        self.showhide_button = ttk.Button(self.button_frame, text="Show/Hide", command=self.showhide)
+        self.showhide_button = ttk.Button(self.button_frame,
+                                          text="Show/Hide",
+                                          command=self.showhide)
         self.showhide_button.grid(row=0, column=2, padx=5)
-        
+
         # Add ver and hor plot tickboxes
         self.plotoptions["ver"]["plot"] = tk.IntVar(value = 1)
-        self.ver_check = ttk.Checkbutton(self.button_frame, text="Vertical", variable=self.plotoptions["ver"]["plot"])
+        self.ver_check = ttk.Checkbutton(self.button_frame,
+                                         text="Vertical",
+                                         variable=self.plotoptions["ver"]["plot"])
         self.ver_check.grid(row=1, column=0, padx=5)
         self.plotoptions["hor"]["plot"] = tk.IntVar(value = 1)
-        self.hor_check = ttk.Checkbutton(self.button_frame, text="Horizontal", variable=self.plotoptions["hor"]["plot"])
+        self.hor_check = ttk.Checkbutton(self.button_frame,
+                                         text="Horizontal",
+                                         variable=self.plotoptions["hor"]["plot"])
         self.hor_check.grid(row=1, column=1, padx=5)
         # Set up references to hor and ver for convenience
         self.hor = self.plotoptions["hor"]["plot"]
         self.ver = self.plotoptions["ver"]["plot"]
 
         # Plot config button
-        self.replot_button = ttk.Button(self.button_frame, text="Plot config", command=self.plotconfig)
+        self.replot_button = ttk.Button(self.button_frame,
+                                        text="Plot config",
+                                        command=self.plotconfig)
         self.replot_button.grid(row=1, column=2, padx=5)
         ### END BUTTON FRAME ###
 
@@ -237,7 +278,6 @@ class GUI_OptLineProto:
 
         if inputDict is None:
             # Default to open beamline
-            # l_focus = 61.6E-3, l_free = 69.3E-3, l_crystal = 15E-3, R = 50E-3, n_crystal = 1.567, theta = radians(18.2)
             self.input = {"Zhor": tk.DoubleVar(value=0), # Distance from waist
                           "Zver": tk.DoubleVar(value=0), # Distance from waist
                           "ZRhor": tk.DoubleVar(value=0), # Rayleigh length
@@ -253,7 +293,8 @@ class GUI_OptLineProto:
         for key in self.input:
             self.input_widgets[key] = ttk.Label(self.inputframe, text=key)
             self.input_widgets[key].grid(row=int(i/2), column=2*(i%2), padx=5)
-            self.input_widgets[f"{key}_entry"] = ttk.Entry(self.inputframe, textvariable=self.input[key])
+            self.input_widgets[f"{key}_entry"] = ttk.Entry(self.inputframe,
+                                                           textvariable=self.input[key])
             self.input_widgets[f"{key}_entry"].grid(row=int(i/2), column=2*(i%2)+1, padx=5)
             i += 1
 
@@ -267,85 +308,108 @@ class GUI_OptLineProto:
         self.parameters = []
         ### END COMPONENT FRAME ###
 
+        ### Matrix calc variables ###
+        # Starting q values
+        self.qhor = 0
+        self.qver = 0
+        # ABCD matrices for the optical line
+        self.matrices_hor = []
+        self.matrices_ver = []
+        # BeamTrace objects for the optical line
+        # Will be initialized on first replot
+        self.horline = None
+        self.verline = None
+        # Plot data for the optical line, stored in dictionary along with plotoptions
+        self.plotdata = {}
+
 
     def add_parameter(self):
-        id = len(self.parameters)
-        new_parameter = LineParameter(self, self.componentframe, id)
+        """Add a new component to the optical line"""
+        newcompid = len(self.parameters)
+        new_parameter = LineParameter(parent = self,
+                                      parentframe = self.componentframe,
+                                      compid = newcompid,
+                                      DEBUG = self.DEBUG)
         self.parameters.append(new_parameter)
-        self.componentframe.rowconfigure(id, weight=1)
-    
-    def destroyLineParam(self, id):
-        param = self.parameters.pop(id)
+        self.componentframe.rowconfigure(self.compid, weight=1)
+
+    def destroyLineParam(self, compid):
+        """Destroy a component in the optical line"""
+        param = self.parameters.pop(compid)
         param.frame.destroy()
         del param
         # Renumber the parameters
         for i, param in enumerate(self.parameters):
-            param.id = i
-    
+            param.compid = i
+
     def showhide(self):
-        # Show or hide the optical line components
+        """Show or hide the optical line components"""
         if self.componentframe.winfo_ismapped():
             self.componentframe.grid_remove()
         else:
             self.componentframe.grid()
 
     def calcqs(self):
-        self.qhor = calcq(Z = self.input["Zhor"].get(), 
-                          ZR = self.input["ZRhor"].get(), 
-                          lam = self.input["lam"].get(), 
-                          W = self.input["Whor"].get(), 
+        """Calculate the q parameters for the optical line"""
+        self.qhor = calcq(Z = self.input["Zhor"].get(),
+                          ZR = self.input["ZRhor"].get(),
+                          lam = self.input["lam"].get(),
+                          W = self.input["Whor"].get(),
                           n = self.input["n"].get())
-        self.qver = calcq(Z = self.input["Zver"].get(), 
-                          ZR = self.input["ZRver"].get(), 
-                          lam = self.input["lam"].get(), 
-                          W = self.input["Wver"].get(), 
+        self.qver = calcq(Z = self.input["Zver"].get(),
+                          ZR = self.input["ZRver"].get(),
+                          lam = self.input["lam"].get(),
+                          W = self.input["Wver"].get(),
                           n = self.input["n"].get())
         print(f"qhor: {self.qhor}, qver: {self.qver}")
 
     def calculate_beamshape(self):
-        # Calculate the beam shape at the end of the optical line
-        if debug:
+        """Calculate the beam shape of the optical line"""
+        if self.DEBUG:
             print(f"Calculating beam shape with {self.samples.get()} samples")
-        
+
         # Calculate qhor and qver
         self.calcqs()
 
         if self.plotoptions["hor"]["plot"].get():
-            if debug: print("Constructing Horizontal")
+            if self.DEBUG:
+                print("Constructing Horizontal")
             # Calculate the fundamental mode waists:
-            self.horline = BeamTrace(self.matrices_hor, 
+            self.horline = BeamTrace(self.matrices_hor,
                                      self.qhor,
-                                     n_points = self.samples.get(), 
+                                     n_points = self.samples.get(),
                                      lda = self.input["lam"].get())
             self.horline.constructRey()
         if self.plotoptions["ver"]["plot"].get():
-            if debug: print("Constructing Vertical")
-            self.verline = BeamTrace(self.matrices_ver, 
+            if self.DEBUG:
+                print("Constructing Vertical")
+            self.verline = BeamTrace(self.matrices_ver,
                                         self.qver,
-                                        n_points = self.samples.get(), 
+                                        n_points = self.samples.get(),
                                         lda = self.input["lam"].get())
             self.verline.constructRey()
-        if debug:
+        if self.DEBUG:
             print("Beam shape calculated")
-    
+
     def buildMatrixList(self):
-        # Fetch the ABCD matrices from the components and build the matrix list
+        """Fetch the ABCD matrices from the components and build the matrix list"""
         self.matrices_hor = []
         self.matrices_ver = []
         for param in self.parameters:
             hor, ver = param.calc_ABCD()
             self.matrices_hor.append(hor)
             self.matrices_ver.append(ver)
-        if debug:
+        if self.DEBUG:
             print(self.matrices_hor)
             print(self.matrices_ver)
-    
+
     def update_options(self):
-        # Update the plotoptions to current values before replotting
+        """Update the plotoptions to current values before replotting"""
         self.plotoptions["hor"]["title"] = f"{self.name.get()} hor"
         self.plotoptions["ver"]["title"] = f"{self.name.get()} ver"
 
     def replot(self, n = 1000):
+        """Replot the optical line"""
         self.samples.set(n)
         self.buildMatrixList()
         self.calculate_beamshape()
@@ -365,21 +429,22 @@ class GUI_OptLineProto:
             self.plotdata["ver"]["x"] = self.verline.xs + offset
             self.plotdata["ver"]["w"] = self.verline.ws
         self.plotdata["plotoptions"] = self.plotoptions
-        if debug: print(f"plotdata keys: {self.plotdata.keys()}")
-        if debug: print(f"plotdata: {self.plotdata}")
+        if self.DEBUG:
+            print(f"plotdata keys: {self.plotdata.keys()}")
+        if self.DEBUG:
+            print(f"plotdata: {self.plotdata}")
         return self.plotdata
 
     def plotconfig(self):
+        """Open the plot configuration window"""
         print(self.PlotOptWindow)
         if self.PlotOptWindow is None:
             self.PlotOptWindow = PlotOptions(parent = self, plotoptions = self.plotoptions)
         else:
             self.PlotOptWindow.root.lift()
-    
-    def setplotoptions(self, plotoptions):
-        print(self.plotoptions)
-    
+
     def savestate(self):
+        """Save the state of the optical line and components in a dictionary"""
         state = {}
         state["name"] = self.name.get()
         state["samples"] = self.samples.get()
@@ -404,8 +469,9 @@ class GUI_OptLineProto:
         for horver in state["plotoptions"]:
             state["plotoptions"][horver]["plot"] = self.plotoptions[horver]["plot"].get()
         return state
-    
+
     def loadstate(self, state):
+        """Load the state of the optical line and components from a dictionary"""
         self.name.set(state["name"])
         self.samples.set(state["samples"])
         self.hor.set(state["hor"])
@@ -421,3 +487,15 @@ class GUI_OptLineProto:
         for param in state["parameters"]:
             self.add_parameter()
             self.parameters[-1].loadstate(param)
+
+def test():
+    """Test function for the Optical Line widget"""
+    root = tk.Tk()
+    root.title("Optical Line Test")
+    tk.Grid.rowconfigure(root, 0, weight=1)
+    tk.Grid.columnconfigure(root, 0, weight=1)
+    optline = GUI_OptLineProto(root, root, compid = 0, location = (0,0)) # pylint: disable=unused-variable
+    root.mainloop()
+
+if __name__ == "__main__":
+    test()

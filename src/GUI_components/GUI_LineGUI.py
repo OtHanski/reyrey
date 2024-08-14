@@ -1,31 +1,48 @@
-from copy import deepcopy
+"""This module implements the LineItem and LineGUI classes, which are used to 
+define the GUI elements for holding an optical line and a collection of optical 
+lines, respectively. Optical line types to be used are imported into GUI_elems."""
+
 import tkinter as tk
 from tkinter import ttk
 
-from .raycalc.matrices import matrixdicts
-from .GUI_OpticalLine import OpticalLine
-from .GUI_cavities import RibbonCavity
+# format depends on whether this is run as a script or imported as a module
+if __name__ == "__main__":
+    from raycalc.matrices import matrixdicts    # pylint: disable=import-error
+    from GUI_OpticalLine import OpticalLine     # pylint: disable=import-error
+    from GUI_Cavities import RibbonCavity       # pylint: disable=import-error
+else:
+    from .raycalc.matrices import matrixdicts
+    from .GUI_OpticalLine import OpticalLine
+    from .GUI_Cavities import RibbonCavity
 
 debug = False
 
-opticalitems = {"Optical Line": OpticalLine, "Ring Cavity": RibbonCavity}
+GUI_elems = {"Optical Line": OpticalLine, "Ring Cavity": RibbonCavity}
 
 class LineItem:
     """tkinter widget for a single line parameter"""
-    def __init__(self, parent, parentframe: ttk.Frame, id = 0, location = (0,0), opticalitems = opticalitems):
+    def __init__(self,              #pylint: disable=dangerous-default-value
+                 parent,
+                 parentframe: ttk.Frame,
+                 compid = 0,
+                 location = None,
+                 opticalitems = GUI_elems):
         self.parent = parent
-        self.id = id
+        self.compid = compid
         self.hor = tk.IntVar(value=1)
         self.ver = tk.IntVar(value=1)
+        if location is None:
+            location = (compid,0)
 
-        self.frame = ttk.LabelFrame(parentframe, text=f"Component {id}", relief=tk.RIDGE)
-        self.frame.grid(row=id, column=0, pady=5, sticky="news")
+
+        self.frame = ttk.LabelFrame(parentframe, text=f"Component {self.compid}", relief=tk.RIDGE)
+        self.frame.grid(row=location[0], column=location[1], pady=5, sticky="news")
         # Make the frame expand to fill the parent
         self.frame.columnconfigure(0, weight=1)
         self.frame.columnconfigure(1, weight=1)
         self.frame.rowconfigure(0, weight=1)
-        self.frame.rowconfigure(1, weight=1) 
-        
+        self.frame.rowconfigure(1, weight=1)
+
         self.buttonframe = ttk.Frame(self.frame)
         self.buttonframe.grid(row=0, column=0, pady=5, sticky="news")
         self.buttonframe.columnconfigure(0, weight=1)
@@ -37,11 +54,15 @@ class LineItem:
         self.component = ttk.Combobox(self.buttonframe, values=self.combo_vals)
         # Bind the combobox to the update_fields function
         self.component.bind("<<ComboboxSelected>>", lambda event: self.update_fields())
+        self.func = None
 
         self.component.grid(row=0, column=0, padx=5)
         self.component.current(0)
 
-        self.remove_button = ttk.Button(self.buttonframe, text="Remove", command=self.remove).grid(row=0, column=1, padx=5)
+        self.remove_button = ttk.Button(self.buttonframe,
+                                        text="Remove",
+                                        command=self.remove)
+        self.remove_button.grid(row=0, column=1, padx=5)
 
         self.itemframe = ttk.Frame(self.frame)
         self.itemframe.grid(row=1, column=0, pady=5, sticky="news")
@@ -50,60 +71,76 @@ class LineItem:
 
         self.fields = {}
         self.init_fields()
-        
-     
+
+
     def init_fields(self):
-        self.item = self.opticalitems[self.get_function()](self.parent, self.itemframe, id = 0, location = (0,0))
+        """Initialize the fields for the optical line"""
+        self.item = self.opticalitems[self.get_function()](self.parent,
+                                                           self.itemframe,
+                                                           compid = 0,
+                                                           location = (0,0))
 
     def remove_fields(self):
-        # Wipe old UI elements to replace with new
+        """Wipe old UI elements to replace with new"""
         self.item.frame.destroy()
         del self.item
-    
+
     def update_fields(self):
-        if debug: print("Updating fields")
+        """Update the fields for the optical line to a new configuration"""
+        if debug:
+            print("Updating fields")
         self.remove_fields()
         self.init_fields()
 
-    def updateID(self, id):
-        self.id = id
-        self.frame.config(text=f"Component {id}")
+    def updateID(self, compid): #pylint: disable=invalid-name
+        """Update the ID of the component"""
+        self.compid = compid
+        self.frame.config(text=f"Component {self.compid}")
         # Reposition on grid
-        self.frame.grid(row=id, column=0, pady=5, sticky="news")
-        
+        self.frame.grid(row=self.compid, column=0, pady=5, sticky="news")
+
 
     def remove(self):
-        if debug: print(f"Removing {self.id}")
-        self.parent.destroyLineParam(self.id)
+        """Remove the line item from the parent"""
+        if debug:
+            print(f"Removing {self.compid}")
+        self.parent.destroyLineParam(self.compid)
 
 
     def get_function(self):
+        """Return the current function selected in the combobox"""
         return self.component.get()
-    
-    def get_ABCD(self):
+
+    def get_ABCD(self):# pylint: disable=invalid-name
+        """Return the ABCD matrix for the current optical line"""
         self.func = matrixdicts[self.get_function()]["func"]
-        if debug: print(self.func)
-        matrixparams = {key: self.fields[f"val{i}"].get() for i, key in enumerate(matrixdicts[self.get_function()]["params"])}
+        if debug:
+            print(self.func)
+        matrixparams = {key: self.fields[f"val{i}"].get()
+                        for i, key in enumerate(matrixdicts[self.get_function()]["params"])}
         matrixparams["func"] = self.func
-        ABCD = matrixparams#matrixdicts[self.get_function()]["func"](**{key: self.fields[f"val{i}"].get() for i, key in enumerate(matrixdicts[self.get_function()]["params"])})
-        if debug: print(ABCD)
+        ABCD = matrixparams #pylint: disable=invalid-name
+        if debug:
+            print(ABCD)
         return ABCD
-    
+
     def replot(self, n = 1000):
+        """Replot the optical line"""
+        # Implemented in child classes
         return self.item.replot(n)
-    
+
     def savestate(self):
-        # Save current state in dict for loading
+        """Save current state in dict for loading"""
         state = {}
         state["function"] = self.get_function()
         state["fields"] = {}
         state["item"] = self.item.savestate()
-        for key in self.fields:
+        for key in self.fields: # pylint: disable=consider-using-dict-items
             state["fields"][key] = self.fields[key].get()
         return state
-    
+
     def loadstate(self, state):
-        # Load state from dict
+        """Load state from dict"""
         self.component.set(state["function"])
         self.update_fields()
         for key in state["fields"]:
@@ -113,14 +150,14 @@ class LineItem:
 
 class LineGUI:
     """tkinter widget for creating, editing and destroying optical lines"""
-    def __init__(self, parent, parentframe, id = 0, location = (0,0)):
+    def __init__(self, parent, parentframe, compid = 0, location = (0,0)):
         """parent: parent widget, 
         parentframe: parent frame, 
-        id: id of the widget, 
+        compid: id of the widget, 
         location: grid location"""
         self.parent = parent
-        self.id = id
-        self.frame = ttk.LabelFrame(parentframe, text=f"Optical Beams")
+        self.compid = compid
+        self.frame = ttk.LabelFrame(parentframe, text="Optical Beams")
         self.frame.grid(row=location[0], column=location[1], pady=5, sticky="news")
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
@@ -143,9 +180,11 @@ class LineGUI:
         self.add_button = ttk.Button(self.button_frame, text="Add Line", command=self.add_parameter)
         self.add_button.grid(row=0, column=1, padx=5)
 
-        self.showhide_button = ttk.Button(self.button_frame, text="Show/Hide", command=self.showhide)
+        self.showhide_button = ttk.Button(self.button_frame,
+                                          text="Show/Hide",
+                                          command=self.showhide)
         self.showhide_button.grid(row=0, column=2, padx=5)
-        
+
         # Replot button
         self.replot_button = ttk.Button(self.button_frame, text="Replot", command=self.replot)
         self.replot_button.grid(row=1, column=2, padx=5)
@@ -166,92 +205,103 @@ class LineGUI:
         self.input = {} # List of inputs, example: "Samples": tk.IntVar(value=1000)
         self.input_widgets = {}
         i = 1
-        for key in self.input:
+        for key in self.input: # pylint: disable=consider-using-dict-items
             self.input_widgets[key] = ttk.Label(self.inputframe, text=key)
             self.input_widgets[key].grid(row=i, column=0, padx=5)
-            self.input_widgets[f"{key}_entry"] = ttk.Entry(self.inputframe, textvariable=self.input[key])
+            self.input_widgets[f"{key}_entry"] = ttk.Entry(self.inputframe,
+                                                           textvariable=self.input[key])
             self.input_widgets[f"{key}_entry"].grid(row=i, column=1, padx=5)
             i += 1
 
         ### COMPONENT FRAME ###
-        self.componentframe = ttk.LabelFrame(self.frame, text="Optical Line Drawer")#, relief=tk.RIDGE)
+        self.componentframe = ttk.LabelFrame(self.frame,
+                                             text="Optical Line Drawer")
         self.componentframe.grid(row=2, column=0, pady=5, sticky="news")
         self.componentframe.columnconfigure(0, weight=1)
 
-        self.opticalLines = []
+        self.opticalLines = [] #pylint: disable=invalid-name
         ### END COMPONENT FRAME ###
 
         ### COLOR LIST ###
-        # Initialize 20 colors for plots
-        self.colors = ["red", "blue", "green", "orange", "purple", "brown", "pink", "cyan", "magenta", "yellow", "black", "grey", 
-                       "lightblue", "lightgreen", "lightyellow", "lightgrey", "darkblue", "darkgreen", "darkred", "darkgrey"]
+        # Initialize 20 colors for plot defaults
+        self.colors = ["red", "blue", "green", "orange", "purple", "brown",
+                       "pink", "cyan", "magenta", "yellow", "black", "grey",
+                       "lightblue", "lightgreen", "lightyellow", "lightgrey",
+                       "darkblue", "darkgreen", "darkred", "darkgrey"]
         self.colorid = 0
 
     def add_parameter(self):
-        id = len(self.opticalLines)
-        location = (id, 0)
-        new_opticalLine = LineItem(self, self.componentframe, id, location)
-        self.opticalLines.append(new_opticalLine)
-        self.componentframe.rowconfigure(id, weight=1)
-    
-    def destroyLineParam(self, id):
-        line = self.opticalLines.pop(id)
+        """Add a new optical line component"""
+        newcompid = len(self.opticalLines)
+        location = (newcompid, 0)
+        new_optLine = LineItem(self, self.componentframe, newcompid, location)
+        self.opticalLines.append(new_optLine)
+        self.componentframe.rowconfigure(newcompid, weight=1)
+
+    def destroyLineParam(self, compid):
+        """Destroy the optical line component with the given id"""
+        line = self.opticalLines.pop(compid)
         line.frame.destroy()
         del line
         # Renumber and reposition the parameters
         for i, optLine in enumerate(self.opticalLines):
-            optLine.updateID(id = i)
-    
+            optLine.updateID(compid = i)
+
     def showhide(self):
-        # Show or hide the optical line
+        """Show or hide the optical line"""
         if self.componentframe.winfo_ismapped():
             self.componentframe.grid_remove()
         else:
             self.componentframe.grid()
 
     def calculate_beamshape(self):
-        pass
-    
+        """Calculate the beam shape for the optical line, currently implemented in child classes"""
+        return 1
+
     def givecolor(self, n = 1):
         """Returns a list of n colors, cycling through the color list"""
         color = []
-        for i in range(n):
+        for i in range(n): #pylint: disable=unused-variable
+            # Continue from current loop location.
             color.append(self.colors[(self.colorid)%len(self.colors)])
             self.colorid += 1
             if self.colorid == len(self.colors):
                 self.colorid = 0
         return color
 
-
-    def get_lines(self):
+    """def get_lines(self):
         xydat = {}
         i = 0
         for line in self.opticalLines:
             xydat[i] = line.replot()
             i += 1
-        return xydat
+        return xydat"""
 
     def replot(self):
+        """Replot the optical lines"""
         plotdata = {}
         i = 0
         for optLine in self.opticalLines:
             plotdata[i] = optLine.replot(n = self.samples.get())
             i+=1
-        if debug: print(f"Replot done in LineGUI, keys: {plotdata.keys()}")
-        if debug: print(f"Replot done in LineGUI, values: {plotdata[0].keys()}")
+        if debug:
+            print(f"Replot done in LineGUI, keys: {plotdata.keys()}")
+        if debug:
+            print(f"Replot done in LineGUI, values: {plotdata[0].keys()}")
         return plotdata
-    
+
     def savestate(self):
+        """Save the current state of the GUI in a dict"""
         state = {}
         state["input"] = {}
         state["Samples"] = self.samples.get()
-        for key in self.input:
+        for key in self.input: # pylint: disable=consider-using-dict-items
             state["input"][key] = self.input[key].get()
         state["opticalLines"] = [optLine.savestate() for optLine in self.opticalLines]
         return state
-    
+
     def loadstate(self, state):
-        # Load the state of the GUI from a dict
+        """Load the state of the GUI from a dict"""
         # First ask whether to remove pre-existing elements
         if tk.messagebox.askyesno("Warning", "Remove pre-existing optical lines?"):
             while self.opticalLines:
@@ -266,14 +316,13 @@ class LineGUI:
             self.opticalLines[-1].loadstate(optLine)
 
 def test():
+    """Test function for LineGUI"""
     root = tk.Tk()
     root.title("Optical Line Test")
     tk.Grid.rowconfigure(root, 0, weight=1)
     tk.Grid.columnconfigure(root, 0, weight=1)
-    optical_line = LineGUI(root, root, location=(0,0))
+    optical_line = LineGUI(root, root, location=(0,0)) #pylint: disable=unused-variable
     root.mainloop()
 
 if __name__ == "__main__":
     test()
-    
-    

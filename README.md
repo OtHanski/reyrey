@@ -17,6 +17,10 @@
 ../reyrey (myenv) > deactivate
 ```
 
+## Important notes
+
+- For the time being, all length parameters are depicted in meters, unless otherwise specified. Will get around to clarifying that later.
+
 ## User instructions
 
 The program is a GUI interface for designing optical beamlines for reshaping of laser beams based on [Ray transfer matrix analysis](https://en.wikipedia.org/wiki/Ray_transfer_matrix_analysis). The program provides the following functionality:
@@ -41,6 +45,7 @@ TODO
 Structure of project:
 
 - `main.py` is responsible for running the main program loop
+- `calctest.py` is a test script for checking that ray transfer calculations are working ok, not needed for operation.
 - GUI components are located in the aptly named `GUI_components` folder. 
 - `GUI_LineGUI.py` imports different types of optical line components and arranges them inside the main window
 - `GUI_OptLineProto.py` defines the prototype class for optical lines. Use this as base if you want to build a new type of optical system.

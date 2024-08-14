@@ -338,11 +338,17 @@ class GUI_OptLineProto:
         if debug:
             print(self.matrices_hor)
             print(self.matrices_ver)
+    
+    def update_options(self):
+        # Update the plotoptions to current values before replotting
+        self.plotoptions["hor"]["title"] = f"{self.name.get()} hor"
+        self.plotoptions["ver"]["title"] = f"{self.name.get()} ver"
 
     def replot(self, n = 1000):
         self.samples.set(n)
         self.buildMatrixList()
         self.calculate_beamshape()
+        self.update_options()
         self.plotdata = {}
         if "x_offset" in self.input:
             offset = self.input["x_offset"].get()
@@ -357,6 +363,7 @@ class GUI_OptLineProto:
             self.plotdata["ver"] = {}
             self.plotdata["ver"]["x"] = self.verline.xs + offset
             self.plotdata["ver"]["w"] = self.verline.ws
+        self.plotdata["plotoptions"] = self.plotoptions
         if debug: print(f"plotdata keys: {self.plotdata.keys()}")
         if debug: print(f"plotdata: {self.plotdata}")
         return self.plotdata
@@ -376,6 +383,7 @@ class GUI_OptLineProto:
         state["samples"] = self.samples.get()
         state["hor"] = self.hor.get()
         state["ver"] = self.ver.get()
+        state["plotoptions"] = self.plotoptions
         state["input"] = {}
         for key in self.input:
             state["input"][key] = self.input[key].get()
@@ -389,6 +397,8 @@ class GUI_OptLineProto:
         self.samples.set(state["samples"])
         self.hor.set(state["hor"])
         self.ver.set(state["ver"])
+        if "plotoptions" in state:
+            self.plotoptions = state["plotoptions"]
         for key in self.input:
             self.input[key].set(state["input"][key])
         for param in state["parameters"]:

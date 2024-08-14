@@ -88,13 +88,17 @@ class App:
         # Create/reset an object to hold the lines
         self.lines = []
         xydat = self.lineslist.replot()
+        print(f"Keys in xydat: {xydat[0].keys()}")
         if debug:
             print(f"xydat keys: {xydat.keys()}")
             print(f"xydat values: {xydat[0]}")
         for optline in xydat:
             # Plot vertical and/or horizontal as provided
-            for horver in xydat[optline]:
-                line = self.ax.plot(np.array(xydat[optline][horver]["x"]), np.array(xydat[optline][horver]["w"])*1E3)
+            for horver in ["hor", "ver"]:
+                line = self.ax.plot(np.array(xydat[optline][horver]["x"]), 
+                                    np.array(xydat[optline][horver]["w"])*1E3, 
+                                    label = xydat[optline]["plotoptions"][horver]["title"],
+                                    color = xydat[optline]["plotoptions"][horver]["color"])
                 self.lines.append(line)
         
         # Add legend to the legend frame

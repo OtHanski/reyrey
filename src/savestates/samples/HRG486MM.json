@@ -20,6 +20,18 @@
                     },
                     "name": "SHG486",
                     "parameters": [],
+                    "plotoptions": {
+                        "hor": {
+                            "color": "green",
+                            "plot": 1,
+                            "title": "SHG486 hor"
+                        },
+                        "ver": {
+                            "color": "orange",
+                            "plot": 1,
+                            "title": "SHG486 ver"
+                        }
+                    },
                     "samples": 1000,
                     "ver": 1
                 }
@@ -82,6 +94,18 @@
                             "ver": 1
                         }
                     ],
+                    "plotoptions": {
+                        "hor": {
+                            "color": "#ff4242",
+                            "plot": 1,
+                            "title": "ML972 hor"
+                        },
+                        "ver": {
+                            "color": "#6c42ff",
+                            "plot": 1,
+                            "title": "ML972 ver"
+                        }
+                    },
                     "samples": 1000,
                     "ver": 1
                 }

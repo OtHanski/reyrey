@@ -35,7 +35,7 @@ Note that if cavity parameters are unstable, currently the cavity calculations s
 
 ## Explanation of the UI:
 
-[Full image of the GUI with sample state HRG486MM loaded](docs/GUI_pics/FullGUI_raw.png)
+![Full image of the GUI with sample state HRG486MM loaded](docs/GUI_pics/FullGUI_raw.png)
 
 
 ## Important notes

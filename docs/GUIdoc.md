@@ -3,7 +3,6 @@
 Raw pictures in `GUI_pics/`.
 
 ![Full image of the GUI with sample state HRG486MM loaded](GUI_pics/FullGUI.png)
-Full image of the GUI with sample state HRG486MM loaded
 
 ![SaveLoad](GUI_pics/SaveLoad.jpg)
 The uppermost portion of the sidebar holds the Save/Load buttons to save and load optical line designs. When loading a design from file, one can either overwrite current system or add the designs from the file on top of the current system.

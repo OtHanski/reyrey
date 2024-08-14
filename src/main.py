@@ -92,17 +92,22 @@ class App:
         if debug:
             print(f"xydat keys: {xydat.keys()}")
             print(f"xydat values: {xydat[0]}")
+        # Decide which ones to plot
+        plots = []
+        if self.hor.get(): plots.append("hor")
+        if self.ver.get(): plots.append("ver")
         for optline in xydat:
             # Plot vertical and/or horizontal as provided
-            for horver in ["hor", "ver"]:
-                line = self.ax.plot(np.array(xydat[optline][horver]["x"]), 
-                                    np.array(xydat[optline][horver]["w"])*1E3, 
-                                    label = xydat[optline]["plotoptions"][horver]["title"],
-                                    color = xydat[optline]["plotoptions"][horver]["color"])
-                self.lines.append(line)
+            for horver in plots:
+                if horver in xydat[optline]:
+                    line = self.ax.plot(np.array(xydat[optline][horver]["x"]), 
+                                        np.array(xydat[optline][horver]["w"])*1E3, 
+                                        label = xydat[optline]["plotoptions"][horver]["title"],
+                                        color = xydat[optline]["plotoptions"][horver]["color"])
+                    self.lines.append(line)
         
         # Add legend to the legend frame
-        self.ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05),
+        self.ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.13),
           ncol=3, fancybox=True, shadow=True)
 
         # Redraw the plot

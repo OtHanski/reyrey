@@ -10,6 +10,8 @@ class PlotOptions:
         self.root.geometry("250x150")
         self.root.title("Plot Options")
         self.root.attributes("-topmost", True)
+        # Set on_closing to run when window is closed
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.parent = parent
     
@@ -68,6 +70,9 @@ class PlotOptions:
     def on_closing(self):
         if hasattr(self.parent, "setplotoptions"):
             self.parent.setplotoptions(self.plotoptions)
+        print(self.parent)
+        if self.parent is not None:
+            self.parent.PlotOptWindow = None
         self.root.destroy()
 
 

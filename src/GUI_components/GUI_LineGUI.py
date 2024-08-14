@@ -146,13 +146,6 @@ class LineGUI:
         self.showhide_button = ttk.Button(self.button_frame, text="Show/Hide", command=self.showhide)
         self.showhide_button.grid(row=0, column=2, padx=5)
         
-        # Add ver and hor plot tickboxes
-        self.ver = tk.IntVar(value = 1)
-        self.ver_check = ttk.Checkbutton(self.button_frame, text="Vertical", variable=self.ver)
-        self.ver_check.grid(row=1, column=0, padx=5)
-        self.hor = tk.IntVar(value = 1)
-        self.hor_check = ttk.Checkbutton(self.button_frame, text="Horizontal", variable=self.hor)
-        self.hor_check.grid(row=1, column=1, padx=5)
         # Replot button
         self.replot_button = ttk.Button(self.button_frame, text="Replot", command=self.replot)
         self.replot_button.grid(row=1, column=2, padx=5)

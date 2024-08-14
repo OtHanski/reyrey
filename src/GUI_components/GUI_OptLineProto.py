@@ -4,6 +4,7 @@ Define the class prototype for Optical line implements in the GUI.
 
 import tkinter as tk
 from tkinter import ttk
+from copy import deepcopy
 
 # Import the GUI component prototypes and init functions 
 # format depends on whether this is run as a script or imported as a module
@@ -369,6 +370,7 @@ class GUI_OptLineProto:
         return self.plotdata
 
     def plotconfig(self):
+        print(self.PlotOptWindow)
         if self.PlotOptWindow is None:
             self.PlotOptWindow = PlotOptions(parent = self, plotoptions = self.plotoptions)
         else:
@@ -383,13 +385,24 @@ class GUI_OptLineProto:
         state["samples"] = self.samples.get()
         state["hor"] = self.hor.get()
         state["ver"] = self.ver.get()
-        state["plotoptions"] = self.plotoptions
         state["input"] = {}
         for key in self.input:
             state["input"][key] = self.input[key].get()
         state["parameters"] = []
         for param in self.parameters:
             state["parameters"].append(param.savestate())
+        # For saving the plotoptions, convert the tk.IntVar to int
+        state["plotoptions"] = {"hor":{
+                                    "plot": self.plotoptions["hor"]["plot"].get(),
+                                    "color": self.plotoptions["hor"]["color"],
+                                    "title": self.plotoptions["hor"]["title"]},
+                                "ver":{
+                                    "plot": self.plotoptions["ver"]["plot"].get(),
+                                    "color": self.plotoptions["ver"]["color"],
+                                    "title": self.plotoptions["ver"]["title"]}
+                                }
+        for horver in state["plotoptions"]:
+            state["plotoptions"][horver]["plot"] = self.plotoptions[horver]["plot"].get()
         return state
     
     def loadstate(self, state):
@@ -397,8 +410,12 @@ class GUI_OptLineProto:
         self.samples.set(state["samples"])
         self.hor.set(state["hor"])
         self.ver.set(state["ver"])
+        # For loading the plotoptions, convert the int to tk.IntVar
         if "plotoptions" in state:
-            self.plotoptions = state["plotoptions"]
+            for horver in state["plotoptions"]:
+                self.plotoptions[horver]["plot"].set(state["plotoptions"][horver]["plot"])
+                self.plotoptions[horver]["color"] = state["plotoptions"][horver]["color"]
+                self.plotoptions[horver]["title"] = state["plotoptions"][horver]["title"]
         for key in self.input:
             self.input[key].set(state["input"][key])
         for param in state["parameters"]:

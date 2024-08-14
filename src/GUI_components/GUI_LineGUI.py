@@ -269,14 +269,6 @@ class LineGUI:
                 self.colorid = 0
         return color
 
-    """def get_lines(self):
-        xydat = {}
-        i = 0
-        for line in self.opticalLines:
-            xydat[i] = line.replot()
-            i += 1
-        return xydat"""
-
     def replot(self):
         """Replot the optical lines"""
         plotdata = {}

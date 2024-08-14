@@ -33,9 +33,11 @@ Note that if cavity parameters are unstable, currently the cavity calculations s
 
 `l_focus = l_free = 1.2 * R_focus` and `theta = 10 deg`.
 
+Note: Typically the optimisation for a SHG cavity should aim on smallest round waist at focus arm, and matching the beamline focus on the free arm focus as best you can. With a ribbon cavity the free arm focus is typically elliptical, so getting a perfect matching is a tad tough with a circular beam => Match between (see sample HRG486MM).
+
 ## Explanation of the UI:
 
-![Full image of the GUI with sample state HRG486MM loaded](docs/GUI_pics/FullGUI_raw.png)
+See [GUIdoc.md](docs/GUIdoc.md)
 
 
 ## Important notes

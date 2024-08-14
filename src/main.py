@@ -18,7 +18,7 @@ class App:
     """Main application class for optical line simulation"""
     def __init__(self, rootwindow):
         self.root = rootwindow
-        self.root.title("Tkinter with Matplotlib")
+        self.root.title("reyrey")
 
         # Bind the window close event
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)

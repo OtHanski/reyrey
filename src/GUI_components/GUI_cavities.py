@@ -29,6 +29,7 @@ class LinCavity(GUI_OptLineProto):
                       "θ (deg)": tk.DoubleVar(value=10), # R mirror Incidence angle
                       "x_offset": tk.DoubleVar(value=0)} # Refractive index
         super().__init__(parent, parentframe, compid, location, inputDict=self.input, DEBUG = DEBUG)
+        self.inputframe["text"] = "Cavity parameters"
         self.add_button.destroy()
 
         # Extra variables for the ribbon cavity
@@ -84,6 +85,7 @@ class RibbonCavity(GUI_OptLineProto):
                       "θ (deg)": tk.DoubleVar(value=10), # R mirror Incidence angle
                       "x_offset": tk.DoubleVar(value=0)} # Refractive index
         super().__init__(parent, parentframe, compid, location, inputDict=self.input, DEBUG = DEBUG)
+        self.inputframe["text"] = "Cavity parameters"
         self.add_button.destroy()
 
         # Extra variables for the ribbon cavity

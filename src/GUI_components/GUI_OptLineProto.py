@@ -271,7 +271,7 @@ class GUI_OptLineProto: # pylint: disable=invalid-name
         ### END BUTTON FRAME ###
 
         ### INPUT BEAM FRAME###
-        self.inputframe = ttk.LabelFrame(self.frame, text="Cavity parameters", relief=tk.RIDGE)
+        self.inputframe = ttk.LabelFrame(self.frame, text="Input beam parameters", relief=tk.RIDGE)
         self.inputframe.grid(row=1, column=0, pady=5, sticky="news")
         self.inputframe.columnconfigure(0, weight=1)
         self.inputframe.rowconfigure(0, weight=1)

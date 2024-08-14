@@ -20,6 +20,7 @@
 - DONE (Aug 2024): Implement color chooser for plots, the automatic colouring is 1. Ugly 2. Confusing. 
 - TODO: Add component labels to plot
 - TODO: Add ability to lock cavity to a chosen focus of OpticalLine => Automatically adjusts cavity position to optimize coupling
+- TODO: Undo functionality (Again, probs a pain in the arse, for now, save often :D)
 
 
 # Unit testing

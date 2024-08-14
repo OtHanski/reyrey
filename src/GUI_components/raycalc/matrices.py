@@ -1,5 +1,7 @@
-from numpy import inf,array
+"""Implements matrices for ray calculations"""
+
 from math import radians, cos, sin
+from numpy import inf,array
 
 def identity():
     """Identity matrix"""
@@ -15,7 +17,6 @@ def thinlens(f = inf):
     """Thin lens matrix, f - rear focal distance [meters]"""
     return array([[1,0],
                   [-1/f,1]])
-                  
 
 def curvedmirrorhor(R = inf, theta = radians(8)):
     """Horizontal curved mirror matrix¨, R - Radius of curvature, theta - incoming beam angle"""
@@ -37,15 +38,16 @@ def flatrefraction(n1 = 1, n2 = 1):
     return array([[1,0],
                   [0,n1/n2]])
 
-def ringCavity(l_focus = 61.6E-3, l_free = 69.3E-3, l_crystal = 15E-3, R = 50E-3, n_crystal = 1.567, theta = radians(18.2)):
+def ringCavity(l_focus = 61.6E-3,
+               l_free = 69.3E-3,
+               l_crystal = 15E-3,
+               R = 50E-3,
+               n_crystal = 1.567,
+               theta = radians(18.2)):
     """Returns the dict for a ringCavity"""
-    #l_focus = 60.105E-3, l_free = 108E-3, l_crystal = 15E-3, R = 50E-3, n_crystal = 1.567, theta = radians(20)
-    #l_focus = 61.6E-3, l_free = 69.3E-3, l_crystal = 15E-3, R = 50E-3, n_crystal = 1.567, theta = radians(18.2)
-    #l_focus = 60.105E-3, l_free = 108E-3, l_crystal = 30E-3, R = 50E-3, n_crystal = 1.567, theta = radians(8)
-    #l_focus = 223E-3, l_free = 380E-3, l_crystal = 15E-3, R = 200E-3, n_crystal = 1.567, theta = radians(11)
     l_diagonal=(l_focus+l_free)/(2*cos(2*theta))
     print(f"Cavity height: {sin(theta)*l_diagonal}")
-    
+
     cavityhor = [
         {"ABCD": free(l = l_crystal/(2*n_crystal)), "label": None},
         {"ABCD": free(l = (l_focus-l_crystal)/2), "label": None},
@@ -56,7 +58,7 @@ def ringCavity(l_focus = 61.6E-3, l_free = 69.3E-3, l_crystal = 15E-3, R = 50E-3
         {"ABCD": free(l = (l_focus-l_crystal)/2), "label": None},
         {"ABCD": free(l = l_crystal/(2*n_crystal)), "label": None}
         ]
-    
+
     cavityver = [
         {"ABCD": free(l = l_crystal/(2*n_crystal)), "label": None},
         {"ABCD": free(l = (l_focus-l_crystal)/2), "label": None},
@@ -67,21 +69,19 @@ def ringCavity(l_focus = 61.6E-3, l_free = 69.3E-3, l_crystal = 15E-3, R = 50E-3
         {"ABCD": free(l = (l_focus-l_crystal)/2), "label": None},
         {"ABCD": free(l = l_crystal/(2*n_crystal)), "label": None}
         ]
-    
+
     return {"hor": cavityhor, "ver": cavityver}
 
 def linCavity(l_cavity = 75E-3, R = 50E-3):
     """Returns the dict for a linCavity (curved plus flat mirror)"""
-    #l_focus = 60.105E-3, l_free = 108E-3, l_crystal = 30E-3, R = 50E-3, n_crystal = 1.567, theta = radians(8)
-    
     cavityhor = [
         {"ABCD": free(l = l_cavity), "label": None},
         {"ABCD": curvedmirrorhor(R = R, theta = 0), "label": f"R = {R*1E3} mm"},
         {"ABCD": free(l = l_cavity), "label": None}
         ]
-    
+
     cavityver = cavityhor
-    
+
     return {"hor": cavityhor, "ver": cavityver}
 
 
@@ -197,7 +197,7 @@ def GUI_matrix(params: dict):
             if not params["ver"]:
                 mat["ver"] = identity()
         case "curvedmirror":
-            mat = {"hor": curvedmirrorhor(R = params["R"], theta = params["θ"]), 
+            mat = {"hor": curvedmirrorhor(R = params["R"], theta = params["θ"]),
                    "ver": curvedmirrorver(R = params["R"], theta = params["θ"])}
             if not params["hor"]:
                 mat["hor"] = identity()
@@ -210,7 +210,7 @@ def GUI_matrix(params: dict):
             if not params["ver"]:
                 mat["ver"] = identity()
         case "flatrefraction":
-            mat = {"hor": flatrefraction(n1 = params["n1"], n2 = params["n2"]), 
+            mat = {"hor": flatrefraction(n1 = params["n1"], n2 = params["n2"]),
                    "ver": flatrefraction(n1 = params["n1"], n2 = params["n2"])}
             if not params["hor"]:
                 mat["hor"] = identity()

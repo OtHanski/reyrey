@@ -1,4 +1,4 @@
-## HOW TO RUN
+# HOW TO RUN
 
 1. Create and activate virtual env, and install dependencies (Windows example below), or install dependency packages from `requirements.txt` in your global env.
 ```
@@ -17,11 +17,8 @@
 ../reyrey (myenv) > deactivate
 ```
 
-## Important notes
 
-- For the time being, all length parameters are depicted in meters, unless otherwise specified. Will get around to clarifying that later.
-
-## User instructions
+# User instructions
 
 The program is a GUI interface for designing optical beamlines for reshaping of laser beams based on [Ray transfer matrix analysis](https://en.wikipedia.org/wiki/Ray_transfer_matrix_analysis). The program provides the following functionality:
 
@@ -36,13 +33,16 @@ Note that if cavity parameters are unstable, currently the cavity calculations s
 
 `l_focus = l_free = 1.2 * R_focus` and `theta = 10 deg`.
 
-Explanation of the UI:
+## Explanation of the UI:
 
-TODO
+[Full image of the GUI with sample state HRG486MM loaded](docs/GUI_pics/FullGUI_raw.png)
 
-##
 
-Structure of project:
+## Important notes
+
+- For the time being, all length parameters are depicted in meters, unless otherwise specified. Will get around to clarifying that later.
+
+# Structure of project:
 
 - `main.py` is responsible for running the main program loop
 - `calctest.py` is a test script for checking that ray transfer calculations are working ok, not needed for operation.
@@ -51,7 +51,8 @@ Structure of project:
 - `GUI_OptLineProto.py` defines the prototype class for optical lines. Use this as base if you want to build a new type of optical system.
 - Specific optical systems should be defined in their own files, e.g. `GUI_OpticalLine.py` and `GUI_cavities.py` implementing free optical beamlines and ribbon & linear optical cavities, respectively.
 - Ray transfer calculation code is in the `GUI_components/raycalc` folder. If one wishes to implement new types of optical components for optical beams, they should be added to `matrices.py`.
+- Project documentation and planning found in docs/projectdocum.md
 
-## Credit
+# Credit
 
 Credit to Artem Golovizin for providing the basis for the ray transfer calculations.

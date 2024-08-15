@@ -21,9 +21,9 @@ class LinCavity(GUI_OptLineProto):
     """LinCavity, extends GUI_OptLineProto to work for a linear cavity. UNFINISHED"""
     def __init__(self, parent, parentframe,  compid = 0, location = (0,0), DEBUG = False):
         self.input = {"lam": tk.DoubleVar(value = 972E-9), # Wavelength
-                      "l_focus": tk.DoubleVar(value=61.6E-3), # Distance from waist
-                      "l_free": tk.DoubleVar(value=69.3E-3), # Distance from waist
-                      "l_crystal": tk.DoubleVar(value=15E-3), # Rayleigh length
+                      "l_cavity": tk.DoubleVar(value=61.6E-3), # Distance from waist
+                      "R_left": tk.DoubleVar(value=69.3E-3), # Distance from waist
+                      "R_right": tk.DoubleVar(value=15E-3), # Rayleigh length
                       "R_foc": tk.DoubleVar(value=50E-3), # Rayleigh length
                       "n_SHG": tk.DoubleVar(value=1.567), # Refractive index of SHG crystal
                       "θ (deg)": tk.DoubleVar(value=10), # R mirror Incidence angle

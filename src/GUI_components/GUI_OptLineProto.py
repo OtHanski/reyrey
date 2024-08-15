@@ -175,7 +175,7 @@ class LineParameter:
         for key in self.fields: #pylint: disable=consider-using-dict-items
             if self.DEBUG:
                 print(f"Setting field {key} to {state['fields'][str(key)]}")
-                print(f"Field: {self.fields[key]["val"]}")
+                print(f"Field: {self.fields[key]['val']}")
             self.fields[key]["val"].set(state["fields"][str(key)])
             print(self.fields[key]["val"].get())
 

@@ -9,15 +9,15 @@ from tkinter import ttk
 if __name__ == "__main__":
     from raycalc.matrices import matrixdicts    # pylint: disable=import-error
     from GUI_OpticalLine import OpticalLine     # pylint: disable=import-error
-    from GUI_Cavities import RibbonCavity       # pylint: disable=import-error
+    from GUI_Cavities import RibbonCavity, LinCavity       # pylint: disable=import-error
 else:
     from .raycalc.matrices import matrixdicts
     from .GUI_OpticalLine import OpticalLine
-    from .GUI_Cavities import RibbonCavity
+    from .GUI_Cavities import RibbonCavity, LinCavity
 
 debug = False
 
-GUI_elems = {"Optical Line": OpticalLine, "Ring Cavity": RibbonCavity}
+GUI_elems = {"Optical Line": OpticalLine, "Ring Cavity": RibbonCavity, "Linear Cavity": LinCavity}
 
 class LineItem:
     """tkinter widget for a single line parameter"""

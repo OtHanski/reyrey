@@ -1,0 +1,99 @@
+{
+    "OptLines": {
+        "Samples": 1000,
+        "input": {},
+        "opticalLines": [
+            {
+                "fields": {},
+                "function": "Linear Cavity",
+                "item": {
+                    "hor": 1,
+                    "input": {
+                        "R": 0.15,
+                        "l_cavity": 0.075,
+                        "lam": 9.72e-07,
+                        "x_offset": 0.285
+                    },
+                    "name": "LinCavity",
+                    "parameters": [],
+                    "plotoptions": {
+                        "hor": {
+                            "color": "green",
+                            "plot": 1,
+                            "title": "LinCavity hor"
+                        },
+                        "ver": {
+                            "color": "orange",
+                            "plot": 1,
+                            "title": "LinCavity ver"
+                        }
+                    },
+                    "samples": 1000,
+                    "ver": 1
+                }
+            },
+            {
+                "fields": {},
+                "function": "Optical Line",
+                "item": {
+                    "hor": 1,
+                    "input": {
+                        "Whor": 0.0005,
+                        "Wver": 0.0005,
+                        "ZRhor": 0.0,
+                        "ZRver": 0.0,
+                        "Zhor": 0.0,
+                        "Zver": 0.0,
+                        "lam": 9.72e-07,
+                        "n": 1.0
+                    },
+                    "name": "BeamLine",
+                    "parameters": [
+                        {
+                            "fields": {
+                                "0": 0.05
+                            },
+                            "function": "free",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 0.25
+                            },
+                            "function": "thinlens",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 0.35
+                            },
+                            "function": "free",
+                            "hor": 1,
+                            "ver": 1
+                        }
+                    ],
+                    "plotoptions": {
+                        "hor": {
+                            "color": "purple",
+                            "plot": 1,
+                            "title": "New Optical Line hor"
+                        },
+                        "ver": {
+                            "color": "brown",
+                            "plot": 1,
+                            "title": "New Optical Line ver"
+                        }
+                    },
+                    "samples": 1000,
+                    "ver": 1
+                }
+            }
+        ]
+    },
+    "horver": [
+        1,
+        1
+    ]
+}

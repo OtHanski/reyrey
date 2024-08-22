@@ -21,8 +21,8 @@ class LinCavity(GUI_OptLineProto):
     """LinCavity, extends GUI_OptLineProto to work for a linear cavity. UNFINISHED"""
     def __init__(self, parent, parentframe,  compid = 0, location = (0,0), DEBUG = False):
         self.input = {"lam": tk.DoubleVar(value = 972E-9), # Wavelength
-                      "l_cavity": tk.DoubleVar(value=61.6E-3), # Distance from waist
-                      "R": tk.DoubleVar(value=15E-3), # Cavity curved mirror radius
+                      "l_cavity": tk.DoubleVar(value=75E-3), # Distance from waist
+                      "R": tk.DoubleVar(value=15E-2), # Cavity curved mirror radius
                       "x_offset": tk.DoubleVar(value=0)} # Refractive index
         super().__init__(parent, parentframe, compid, location, inputDict=self.input, DEBUG = DEBUG)
         self.inputframe["text"] = "Cavity parameters"

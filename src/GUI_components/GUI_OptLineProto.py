@@ -219,6 +219,7 @@ class GUI_OptLineProto: # pylint: disable=invalid-name
             self.samples = tk.IntVar(value=100)
 
         if hasattr(parent, "givecolor"):
+            # If available, fetch line colors from parent
             colors = parent.givecolor(n = 2)
             self.plotoptions["hor"]["color"] = colors[0]
             self.plotoptions["ver"]["color"] = colors[1]
@@ -285,7 +286,8 @@ class GUI_OptLineProto: # pylint: disable=invalid-name
                           "Whor": tk.DoubleVar(value=1E-3), # Beam waist
                           "Wver": tk.DoubleVar(value=1E-3), # Beam waist
                           "lam": tk.DoubleVar(value=972E-9), # Wavelength
-                          "n": tk.DoubleVar(value=1)} # Refractive index
+                          "n": tk.DoubleVar(value=1), # Refractive index
+                          "x_offset": tk.DoubleVar(value=0)} # Offset in x
         else:
             self.input = inputDict
         self.input_widgets = {}

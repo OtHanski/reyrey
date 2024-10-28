@@ -28,7 +28,7 @@ class LinCavity(GUI_OptLineProto):
         self.inputframe["text"] = "Cavity parameters"
         self.add_button.destroy()
 
-        # Extra variables for the ribbon cavity
+        # Extra variables for the linear cavity
         self.matrices = None
         self.horABCD = None # pylint: disable=invalid-name
         self.verABCD = None # pylint: disable=invalid-name

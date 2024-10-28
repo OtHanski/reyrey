@@ -9,7 +9,12 @@ import tkinter as tk
 if __name__ == "__main__":
     from GUI_OptLineProto import GUI_OptLineProto # pylint: disable=import-error
 else:
-    from .GUI_OptLineProto import GUI_OptLineProto
+    try:
+        from .GUI_OptLineProto import GUI_OptLineProto
+    except ImportError:
+        print("ImportError, retrying without relative import")
+        from GUI_components.GUI_OptLineProto import GUI_OptLineProto
+        print("Import successful")
 
 debug = False
 

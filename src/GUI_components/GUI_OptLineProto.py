@@ -12,9 +12,16 @@ if __name__ == "__main__":
     from raycalc.matrixcalc import BeamTrace, calcq      # pylint: disable=import-error
     from GUI_PlotOptions import PlotOptions              # pylint: disable=import-error
 else:
-    from .raycalc.matrices import matrixdicts, GUI_matrix
-    from .raycalc.matrixcalc import BeamTrace, calcq
-    from .GUI_PlotOptions import PlotOptions
+    try:
+        from .raycalc.matrices import matrixdicts, GUI_matrix
+        from .raycalc.matrixcalc import BeamTrace, calcq
+        from .GUI_PlotOptions import PlotOptions
+    except ImportError:
+        print("ImportError, retrying without relative import")
+        from raycalc.matrices import matrixdicts, GUI_matrix
+        from raycalc.matrixcalc import BeamTrace, calcq
+        from GUI_PlotOptions import PlotOptions
+        print("Import successful")
 
 class LineParameter:
     """tkinter widget for a single optical beamline parameter"""

@@ -1,0 +1,169 @@
+{
+    "OptLines": {
+        "Samples": 1000,
+        "input": {},
+        "opticalLines": [
+            {
+                "fields": {},
+                "function": "Scatter",
+                "item": {
+                    "hor": 1,
+                    "input": {},
+                    "name": "W meas",
+                    "parameters": [
+                        {
+                            "fields": {
+                                "0": 0.37,
+                                "1": 0.001266,
+                                "2": 0.00051
+                            },
+                            "function": "Point",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 0.927,
+                                "1": 0.001179,
+                                "2": 0.00056
+                            },
+                            "function": "Point",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 1.127,
+                                "1": 0.001876,
+                                "2": 0.000912
+                            },
+                            "function": "Point",
+                            "hor": 1,
+                            "ver": 1
+                        }
+                    ],
+                    "plotoptions": {
+                        "hor": {
+                            "color": "green",
+                            "plot": 1,
+                            "title": "W meas hor"
+                        },
+                        "ver": {
+                            "color": "orange",
+                            "plot": 1,
+                            "title": "W meas ver"
+                        }
+                    },
+                    "samples": 1000,
+                    "ver": 1
+                }
+            },
+            {
+                "fields": {},
+                "function": "Optical Line",
+                "item": {
+                    "hor": 1,
+                    "input": {
+                        "Whor": 5.3e-05,
+                        "Wver": 0.00012,
+                        "ZRhor": 0.0,
+                        "ZRver": 0.0,
+                        "Zhor": -0.66,
+                        "Zver": -0.64,
+                        "lam": 4.86e-07,
+                        "n": 1.0,
+                        "x_offset": 0.0
+                    },
+                    "name": "Free beam fit",
+                    "parameters": [
+                        {
+                            "fields": {
+                                "0": 1.2
+                            },
+                            "function": "free",
+                            "hor": 1,
+                            "ver": 1
+                        }
+                    ],
+                    "plotoptions": {
+                        "hor": {
+                            "color": "purple",
+                            "plot": 1,
+                            "title": "Free beam fit hor"
+                        },
+                        "ver": {
+                            "color": "brown",
+                            "plot": 1,
+                            "title": "Free beam fit ver"
+                        }
+                    },
+                    "samples": 1000,
+                    "ver": 1
+                }
+            },
+            {
+                "fields": {},
+                "function": "Optical Line",
+                "item": {
+                    "hor": 1,
+                    "input": {
+                        "Whor": 7.1e-05,
+                        "Wver": 0.00017,
+                        "ZRhor": 0.0,
+                        "ZRver": 0.0,
+                        "Zhor": 0.35,
+                        "Zver": 0.31,
+                        "lam": 4.86e-07,
+                        "n": 1.0,
+                        "x_offset": 0.0
+                    },
+                    "name": "Fit with lens",
+                    "parameters": [
+                        {
+                            "fields": {
+                                "0": 0.24
+                            },
+                            "function": "free",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 0.25
+                            },
+                            "function": "thinlens",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 1.0
+                            },
+                            "function": "free",
+                            "hor": 1,
+                            "ver": 1
+                        }
+                    ],
+                    "plotoptions": {
+                        "hor": {
+                            "color": "pink",
+                            "plot": 1,
+                            "title": "Fit with lens hor"
+                        },
+                        "ver": {
+                            "color": "cyan",
+                            "plot": 1,
+                            "title": "Fit with lens ver"
+                        }
+                    },
+                    "samples": 1000,
+                    "ver": 1
+                }
+            }
+        ]
+    },
+    "horver": [
+        1,
+        1
+    ]
+}

@@ -55,6 +55,10 @@ See [GUIdoc.md](docs/GUIdoc.md)
 - Ray transfer calculation code is in the `GUI_components/raycalc` folder. If one wishes to implement new types of optical components for optical beams, they should be added to `matrices.py`.
 - Project documentation and planning found in docs/projectdocum.md
 
+# TODO:
+
+- Find a workaround for scatterplot autoscaling not working (matplotlib issue, does not support scatter collection)
+
 # Credit
 
 Credit to Artem Golovizin for providing the basis for the ray transfer calculations.

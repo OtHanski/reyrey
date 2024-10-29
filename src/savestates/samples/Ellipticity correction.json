@@ -16,7 +16,8 @@
                         "Zhor": 0.0,
                         "Zver": 0.0,
                         "lam": 4.86e-07,
-                        "n": 1.0
+                        "n": 1.0,
+                        "x_offset": 0
                     },
                     "name": "New Optical Line",
                     "parameters": [

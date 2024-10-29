@@ -190,7 +190,6 @@ class ScatterPlot(GUI_OptLineProto):
         self.samples.set(n)
         self.update_options()
         points = []
-        print(f"Parameters: {self.parameters}")
         for point in self.parameters:
             points.append(point.get_vals())
         self.plotdata = {}
@@ -202,7 +201,6 @@ class ScatterPlot(GUI_OptLineProto):
             self.plotdata["hor"] = {}
             xs = []
             ws = []
-            print(f"Points: {points}")
             for point in points:
                 print(point)
                 if point["hor"] is not None:

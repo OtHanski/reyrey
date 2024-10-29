@@ -58,6 +58,7 @@ See [GUIdoc.md](docs/GUIdoc.md)
 # TODO:
 
 - Find a workaround for scatterplot autoscaling not working (matplotlib issue, does not support scatter collection)
+- Figure out what goes wrong when old savestate missing parameter added later
 
 # Credit
 

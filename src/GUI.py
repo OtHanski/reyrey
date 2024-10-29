@@ -89,8 +89,11 @@ class App:
     def update_plot(self):
         """Replot the optical lines"""
         # Clear the current plot
-        for line in self.ax.get_lines():
+        print(self.lines)
+        for line in self.lines:
             line.remove()
+        #for line in self.ax.get_lines():
+            #line.remove()
         # Create/reset an object to hold the lines
         self.lines = []
         xydat = self.lineslist.replot()
@@ -107,11 +110,22 @@ class App:
             # Plot vertical and/or horizontal as provided
             for horver in plots:
                 if horver in xydat[optline]:
-                    line = self.ax.plot(np.array(xydat[optline][horver]["x"]),
-                                        np.array(xydat[optline][horver]["w"])*1E3,
-                                        label = xydat[optline]["plotoptions"][horver]["title"],
-                                        color = xydat[optline]["plotoptions"][horver]["color"])
-                    self.lines.append(line)
+                    # Check if the plot type is scatter or line
+                    match xydat[optline]["plotoptions"]["plottype"]:
+                        case "scatter":
+                            # Scatter plot
+                            scatter = self.ax.scatter(np.array(xydat[optline][horver]["x"]),
+                                                      np.array(xydat[optline][horver]["w"])*1E3,
+                                                      label = xydat[optline]["plotoptions"][horver]["title"],
+                                                      color = xydat[optline]["plotoptions"][horver]["color"])
+                            self.lines.append(scatter)
+                        case "line":
+                            # Line plot
+                            line = self.ax.plot(np.array(xydat[optline][horver]["x"]),
+                                                np.array(xydat[optline][horver]["w"])*1E3,
+                                                label = xydat[optline]["plotoptions"][horver]["title"],
+                                                color = xydat[optline]["plotoptions"][horver]["color"])
+                            self.lines.append(line[0])
 
         # Add legend to the legend frame
         self.ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.13),

@@ -217,7 +217,8 @@ class GUI_OptLineProto: # pylint: disable=invalid-name
         self.PlotOptWindow = None
         self.plotoptions = {
             "hor": {"color": "red"},
-            "ver": {"color": "blue"}
+            "ver": {"color": "blue"},
+            "plottype": "line"
         }
 
         if hasattr(parent, "linesamples"):

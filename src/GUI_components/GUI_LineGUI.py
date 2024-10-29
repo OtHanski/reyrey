@@ -10,14 +10,16 @@ if __name__ == "__main__":
     from raycalc.matrices import matrixdicts    # pylint: disable=import-error
     from GUI_OpticalLine import OpticalLine     # pylint: disable=import-error
     from GUI_Cavities import RibbonCavity, LinCavity       # pylint: disable=import-error
+    from GUI_ScatterPlot import ScatterPlot     # pylint: disable=import-error
 else:
     from .raycalc.matrices import matrixdicts
     from .GUI_OpticalLine import OpticalLine
     from .GUI_Cavities import RibbonCavity, LinCavity
+    from .GUI_ScatterPlot import ScatterPlot 
 
 debug = False
 
-GUI_elems = {"Optical Line": OpticalLine, "Ring Cavity": RibbonCavity, "Linear Cavity": LinCavity}
+GUI_elems = {"Optical Line": OpticalLine, "Ring Cavity": RibbonCavity, "Linear Cavity": LinCavity, "Scatter": ScatterPlot}
 
 class LineItem:
     """tkinter widget for a single line parameter"""

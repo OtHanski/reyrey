@@ -134,6 +134,7 @@ class ScatterPoint:
             vals["ver"] = self.fields[2]["val"].get()
         else:
             vals["ver"] = None
+        return vals
 
     def savestate(self):
         """Save current component state in a dictionary"""
@@ -172,6 +173,7 @@ class ScatterPlot(GUI_OptLineProto):
     def __init__(self, parent, parentframe,  compid = 0, location = (0,0), DEBUG = 0): # pylint: disable=useless-super-delegation
         self.input = {}
         super().__init__(parent, parentframe, compid, location, inputDict=self.input, DEBUG = DEBUG)
+        self.plotoptions["plottype"] = "scatter"
     
     def add_parameter(self):
         """Add a new component to the optical line"""
@@ -186,7 +188,9 @@ class ScatterPlot(GUI_OptLineProto):
     def replot(self, n = 1000):
         """Overwrite the replot function to plot the scatter points"""
         self.samples.set(n)
+        self.update_options()
         points = []
+        print(f"Parameters: {self.parameters}")
         for point in self.parameters:
             points.append(point.get_vals())
         self.plotdata = {}
@@ -198,7 +202,9 @@ class ScatterPlot(GUI_OptLineProto):
             self.plotdata["hor"] = {}
             xs = []
             ws = []
+            print(f"Points: {points}")
             for point in points:
+                print(point)
                 if point["hor"] is not None:
                     xs.append(point["x"] + offset)
                     ws.append(point["hor"])

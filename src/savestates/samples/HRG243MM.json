@@ -42,37 +42,21 @@
                 "item": {
                     "hor": 1,
                     "input": {
-                        "Whor": 5e-05,
-                        "Wver": 5e-05,
-                        "ZRhor": 0.0012,
-                        "ZRver": 0.005,
-                        "Zhor": 0.0,
-                        "Zver": 0.0,
+                        "Whor": 7.1e-05,
+                        "Wver": 0.00017,
+                        "ZRhor": 0.0,
+                        "ZRver": 0.0,
+                        "Zhor": 0.35,
+                        "Zver": 0.31,
                         "lam": 4.86e-07,
                         "n": 1.0,
-                        "x_offset": 0
+                        "x_offset": 0.0
                     },
                     "name": "486Beam",
                     "parameters": [
                         {
                             "fields": {
-                                "0": 0.03
-                            },
-                            "function": "free",
-                            "hor": 1,
-                            "ver": 1
-                        },
-                        {
-                            "fields": {
-                                "0": -0.05
-                            },
-                            "function": "thinlens",
-                            "hor": 1,
-                            "ver": 1
-                        },
-                        {
-                            "fields": {
-                                "0": 0.25483
+                                "0": 0.24
                             },
                             "function": "free",
                             "hor": 1,
@@ -88,7 +72,7 @@
                         },
                         {
                             "fields": {
-                                "0": 0.5
+                                "0": 0.85
                             },
                             "function": "free",
                             "hor": 1,
@@ -104,7 +88,7 @@
                         },
                         {
                             "fields": {
-                                "0": 0.0585
+                                "0": 0.0681
                             },
                             "function": "free",
                             "hor": 1,
@@ -112,7 +96,7 @@
                         },
                         {
                             "fields": {
-                                "0": 0.019
+                                "0": 0.025
                             },
                             "function": "thinlens",
                             "hor": 1,
@@ -120,23 +104,7 @@
                         },
                         {
                             "fields": {
-                                "0": 0.1
-                            },
-                            "function": "free",
-                            "hor": 1,
-                            "ver": 1
-                        },
-                        {
-                            "fields": {
-                                "0": 0.15
-                            },
-                            "function": "thinlens",
-                            "hor": 1,
-                            "ver": 1
-                        },
-                        {
-                            "fields": {
-                                "0": 0.1927
+                                "0": 0.08
                             },
                             "function": "free",
                             "hor": 1,
@@ -152,7 +120,23 @@
                         },
                         {
                             "fields": {
-                                "0": 1.5
+                                "0": 0.096
+                            },
+                            "function": "free",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 0.04
+                            },
+                            "function": "thinlens",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 1.3
                             },
                             "function": "free",
                             "hor": 1,

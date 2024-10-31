@@ -89,7 +89,8 @@ class App:
     def update_plot(self):
         """Replot the optical lines"""
         # Clear the current plot
-        print(self.lines)
+        if DEBUG:
+            print(self.lines)
         for line in self.lines:
             line.remove()
         #for line in self.ax.get_lines():

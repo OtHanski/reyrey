@@ -166,7 +166,6 @@ class ScatterPoint:
                 print(f"Setting field {key} to {state['fields'][str(key)]}")
                 print(f"Field: {self.fields[key]['val']}")
             self.fields[key]["val"].set(state["fields"][str(key)])
-            print(self.fields[key]["val"].get())
 
 class ScatterPlot(GUI_OptLineProto):
     """Default optical beamline implementation"""

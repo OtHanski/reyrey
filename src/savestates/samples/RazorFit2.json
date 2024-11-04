@@ -170,9 +170,9 @@
                     "parameters": [
                         {
                             "fields": {
-                                "0": 0.245,
-                                "1": 0.001383,
-                                "2": 0.000881
+                                "0": 0.24,
+                                "1": 0.001595,
+                                "2": 0.000741
                             },
                             "function": "Point",
                             "hor": 1,
@@ -209,6 +209,65 @@
                             "color": "#0000ff",
                             "plot": 1,
                             "title": "W meas 2 ver"
+                        }
+                    },
+                    "samples": 1000,
+                    "ver": 1
+                }
+            },
+            {
+                "fields": {},
+                "function": "Optical Line",
+                "item": {
+                    "hor": 1,
+                    "input": {
+                        "Whor": 3.9e-05,
+                        "Wver": 8.8e-05,
+                        "ZRhor": 0.0,
+                        "ZRver": 0.0,
+                        "Zhor": 0.05,
+                        "Zver": 0.05,
+                        "lam": 4.86e-07,
+                        "n": 1.0,
+                        "x_offset": 0.0
+                    },
+                    "name": "Second fit",
+                    "parameters": [
+                        {
+                            "fields": {
+                                "0": 0.246
+                            },
+                            "function": "free",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 0.175
+                            },
+                            "function": "thinlens",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 1.0
+                            },
+                            "function": "free",
+                            "hor": 1,
+                            "ver": 1
+                        }
+                    ],
+                    "plotoptions": {
+                        "hor": {
+                            "color": "red",
+                            "plot": 1,
+                            "title": "Second fit hor"
+                        },
+                        "ver": {
+                            "color": "blue",
+                            "plot": 1,
+                            "title": "Second fit ver"
                         }
                     },
                     "samples": 1000,

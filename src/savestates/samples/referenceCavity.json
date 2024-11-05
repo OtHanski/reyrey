@@ -1,0 +1,116 @@
+{
+    "OptLines": {
+        "Samples": 1000,
+        "input": {},
+        "opticalLines": [
+            {
+                "fields": {},
+                "function": "Linear Cavity",
+                "item": {
+                    "hor": 1,
+                    "input": {
+                        "R": 0.5,
+                        "l_cavity": 0.075,
+                        "lam": 9.72e-07,
+                        "x_offset": 0.7
+                    },
+                    "name": "Reference Cavity",
+                    "parameters": [],
+                    "plotoptions": {
+                        "hor": {
+                            "color": "purple",
+                            "plot": 1,
+                            "title": "Reference Cavity hor"
+                        },
+                        "ver": {
+                            "color": "brown",
+                            "plot": 1,
+                            "title": "Reference Cavity ver"
+                        }
+                    },
+                    "samples": 1000,
+                    "ver": 1
+                }
+            },
+            {
+                "fields": {},
+                "function": "Optical Line",
+                "item": {
+                    "hor": 1,
+                    "input": {
+                        "Whor": 0.001,
+                        "Wver": 0.001,
+                        "ZRhor": 0.0,
+                        "ZRver": 0.0,
+                        "Zhor": 0.0,
+                        "Zver": 0.0,
+                        "lam": 9.72e-07,
+                        "n": 1.0,
+                        "x_offset": 0.0
+                    },
+                    "name": "Beam fit",
+                    "parameters": [
+                        {
+                            "fields": {
+                                "0": 0.113
+                            },
+                            "function": "free",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 0.2
+                            },
+                            "function": "thinlens",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 0.29
+                            },
+                            "function": "free",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 0.075
+                            },
+                            "function": "thinlens",
+                            "hor": 1,
+                            "ver": 1
+                        },
+                        {
+                            "fields": {
+                                "0": 0.4
+                            },
+                            "function": "free",
+                            "hor": 1,
+                            "ver": 1
+                        }
+                    ],
+                    "plotoptions": {
+                        "hor": {
+                            "color": "pink",
+                            "plot": 1,
+                            "title": "Beam fit hor"
+                        },
+                        "ver": {
+                            "color": "cyan",
+                            "plot": 1,
+                            "title": "Beam fit ver"
+                        }
+                    },
+                    "samples": 1000,
+                    "ver": 1
+                }
+            }
+        ]
+    },
+    "horver": [
+        1,
+        1
+    ]
+}

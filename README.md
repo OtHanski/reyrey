@@ -62,4 +62,4 @@ See [GUIdoc.md](docs/GUIdoc.md)
 
 # Credit
 
-Credit to Artem Golovizin for providing the basis for the ray transfer calculations.
+Credit to Artem Golovizin for providing the original reference code for the ray transfer matrix calculations, and helping me figure out what was wrong with mine!

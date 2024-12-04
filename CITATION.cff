@@ -1,0 +1,24 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: reyrey
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Otto
+    family-names: Hanski
+    email: hanskitek@gmail.com
+    orcid: 'https://orcid.org/0000-0002-3230-2332'
+    affiliation: Hanskitek Oy
+repository-code: 'https://github.com/OtHanski/reyrey'
+abstract: >-
+  Simple GUI tool for ray transfer matrix analysis of laser
+  beamlines and optical cavities.
+keywords:
+  - Ray transfer matrix analysis
+  - ABCD matrix analysis
+  - Laser beam modeling
+license: MIT

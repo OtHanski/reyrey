@@ -38,6 +38,16 @@ def flatrefraction(n1 = 1, n2 = 1):
     return array([[1,0],
                   [0,n1/n2]])
 
+def brewsterhor(l = 15E-3, n = 1.567):
+    """Horizontal Brewster element matrix, l is the lenght along the light traveling direction, for a Brewster cut crystal
+    simply the lenght of crystal from face to face. n is the refractiva index for crystal"""
+    return array([[1, l/(2*n**3)], [0,1]])
+
+def brewsterver(l = 15E-3, n = 1.567):
+    """HoVertical Brewster element matrix, l is the lenght along the light traveling direction, for a Brewster cut crystal
+    simply the lenght of crystal from face to face. n is the refractiva index for crystal"""
+    return array([[1, l/(2*n)], [0,1]])
+
 def ringCavity(l_focus = 61.6E-3,
                l_free = 69.3E-3,
                l_crystal = 15E-3,
@@ -46,28 +56,28 @@ def ringCavity(l_focus = 61.6E-3,
                theta = radians(18.2)):
     """Returns the dict for a ringCavity"""
     l_diagonal=(l_focus+l_free)/(2*cos(2*theta))
-    print(f"Cavity height: {sin(theta)*l_diagonal}")
+    print(f"Cavity height: {sin(2*theta)*l_diagonal}")
 
     cavityhor = [
-        {"ABCD": free(l = l_crystal/(2*n_crystal)), "label": None},
+        {"ABCD": brewsterhor(l = l_crystal/2, n = n_crystal), "label": None},
         {"ABCD": free(l = (l_focus-l_crystal)/2), "label": None},
         {"ABCD": curvedmirrorhor(R = R, theta = theta), "label": f"R = {R*1E3} mm"},
         {"ABCD": free(l = (2*l_diagonal+l_free)/2), "label": None},
         {"ABCD": free(l = (2*l_diagonal+l_free)/2), "label": None},
         {"ABCD": curvedmirrorhor(R = R, theta = theta), "label": f"R = {R*1E3} mm"},
         {"ABCD": free(l = (l_focus-l_crystal)/2), "label": None},
-        {"ABCD": free(l = l_crystal/(2*n_crystal)), "label": None}
+        {"ABCD": brewsterhor(l = l_crystal/2, n = n_crystal), "label": None}
         ]
 
     cavityver = [
-        {"ABCD": free(l = l_crystal/(2*n_crystal)), "label": None},
+        {"ABCD": brewsterver(l = l_crystal/2, n=n_crystal), "label": None},
         {"ABCD": free(l = (l_focus-l_crystal)/2), "label": None},
         {"ABCD": curvedmirrorver(R = R, theta = theta), "label": f"R = {R*1E3} mm"},
         {"ABCD": free(l = (2*l_diagonal+l_free)/2), "label": None},
         {"ABCD": free(l = (2*l_diagonal+l_free)/2), "label": None},
         {"ABCD": curvedmirrorver(R = R, theta = theta), "label": f"R = {R*1E3} mm"},
         {"ABCD": free(l = (l_focus-l_crystal)/2), "label": None},
-        {"ABCD": free(l = l_crystal/(2*n_crystal)), "label": None}
+        {"ABCD": brewsterver(l = l_crystal/2, n=n_crystal), "label": None}
         ]
 
     return {"hor": cavityhor, "ver": cavityver}
